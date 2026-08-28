@@ -1,26 +1,245 @@
-/* eslint-disable max-len */
+/* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { UserWarning } from './UserWarning';
-
-const USER_ID = 0;
+import { createTodo, deleteTodo, getTodos, USER_ID } from './api/todos';
+import { Todo } from './types/Todo';
+import { TodoMain } from './components/TodoMain/TodoMain';
+import { ErrorNotification } from './components/ErrorNotif/ErrorNotification';
+import { TodoFooter } from './components/TodoFooter/TodoFooter';
 
 export const App: React.FC = () => {
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [filterStatus, setFilterStatus] = useState('all');
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [loadingTodoIds, setLoadingTodoIds] = useState<number[]>([]);
+
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [isInputDisabled, setIsInputDisabled] = useState(false);
+  const [query, setQuery] = useState('');
+  const textInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    getTodos()
+      .then(data => {
+        setTodos(data);
+      })
+      .catch(() => {
+        setErrorMessage('Unable to load todos');
+        setTimeout(() => setErrorMessage(null), 3000);
+      });
+  }, []);
+
+  useEffect(() => {
+    if (!isInputDisabled) {
+      textInputRef.current?.focus();
+    }
+  }, [isInputDisabled]);
+
+  const filteredTodos = todos.filter(todo => {
+    if (filterStatus === 'active' && todo.completed) {
+      return false;
+    }
+
+    if (filterStatus === 'completed' && !todo.completed) {
+      return false;
+    }
+
+    return true;
+  });
+
+  const handleAddTodo = (title: string) => {
+    const trimmedTitle = title.trim();
+
+    if (!trimmedTitle) {
+      setErrorMessage('Title should not be empty');
+      setTimeout(() => setErrorMessage(null), 3000);
+
+      return;
+    }
+
+    setIsInputDisabled(true);
+
+    const tempTodoItem: Todo = {
+      id: 0,
+      title: trimmedTitle,
+      completed: false,
+      userId: USER_ID,
+    };
+
+    setTempTodo(tempTodoItem);
+
+    createTodo({ title: trimmedTitle, userId: USER_ID })
+      .then(newTodo => {
+        setTodos(current => [...current, newTodo]);
+        setTempTodo(null);
+        setQuery('');
+      })
+      .catch(() => {
+        setErrorMessage('Unable to add a todo');
+        setTimeout(() => setErrorMessage(null), 3000);
+        setTempTodo(null);
+      })
+      .finally(() => {
+        setIsInputDisabled(false);
+      });
+  };
+
+  const handleDeleteTodo = (todoId: number) => {
+    setIsInputDisabled(true);
+    const todoToDelete = todos.find(todo => todo.id === todoId);
+
+    if (!todoToDelete) {
+      return;
+    }
+
+    setLoadingTodoIds(prev => [...prev, todoToDelete.id]);
+
+    deleteTodo(todoId)
+      .then(() => {
+        setTodos(currentTodos =>
+          currentTodos.filter(todo => todo.id !== todoId),
+        );
+      })
+      .catch(() => {
+        setErrorMessage('Unable to delete a todo');
+        setTimeout(() => setErrorMessage(null), 3000);
+      })
+      .finally(() => {
+        setLoadingTodoIds([]);
+        setIsInputDisabled(false);
+      });
+  };
+
+  const handleClearCompleted = () => {
+    setIsInputDisabled(true);
+
+    const completed = todos.filter(todo => todo.completed);
+    const completedIds = completed.map(t => t.id);
+
+    setLoadingTodoIds(completedIds);
+
+    Promise.allSettled(
+      completed.map(todo => deleteTodo(todo.id).then(() => todo.id)),
+    )
+      .then(results => {
+        const successfulIds: number[] = [];
+        let hasError = false;
+
+        results.forEach(result => {
+          if (result.status === 'fulfilled') {
+            successfulIds.push(result.value);
+          } else {
+            hasError = true;
+          }
+        });
+
+        setTodos(current =>
+          current.filter(todo => !successfulIds.includes(todo.id)),
+        );
+
+        if (hasError) {
+          setErrorMessage('Unable to delete a todo');
+          setTimeout(() => setErrorMessage(null), 3000);
+        }
+      })
+      .finally(() => {
+        setLoadingTodoIds([]);
+        setIsInputDisabled(false);
+      });
+  };
+
+  const activeTodos = () => {
+    const active = todos.filter(todo => !todo.completed);
+
+    return active.length;
+  };
+
+  const completedTodos = () => {
+    const completed = todos.filter(todo => todo.completed);
+
+    return completed.length;
+  };
+
+  const handleFilterActive = () => {
+    setFilterStatus('active');
+  };
+
+  const handleFilterCompleted = () => {
+    setFilterStatus('completed');
+  };
+
+  const handleFilterAll = () => {
+    setFilterStatus('all');
+  };
+
+  const handleHideBtn = () => {
+    setErrorMessage(null);
+  };
+
   if (!USER_ID) {
     return <UserWarning />;
   }
 
   return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">
-          React Todo App - Load Todos
-        </a>
-      </p>
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+      <div className="todoapp__content">
+        <header className="todoapp__header">
+          <button
+            type="button"
+            className={
+              todos.every(todo => todo.completed)
+                ? 'todoapp__toggle-all active'
+                : 'todoapp__toggle-all'
+            }
+            data-cy="ToggleAllButton"
+          />
+
+          <form
+            onSubmit={event => {
+              event.preventDefault();
+              handleAddTodo(query);
+            }}
+          >
+            <input
+              ref={textInputRef}
+              data-cy="NewTodoField"
+              type="text"
+              className="todoapp__new-todo"
+              placeholder="What needs to be done?"
+              disabled={isInputDisabled}
+              value={query}
+              onChange={event => {
+                setQuery(event.target.value);
+              }}
+              autoFocus
+            />
+          </form>
+        </header>
+
+        <TodoMain
+          todos={filteredTodos}
+          tempTodo={tempTodo}
+          handleDelete={handleDeleteTodo}
+          loadingTodoIds={loadingTodoIds}
+        />
+
+        {todos.length > 0 && (
+          <TodoFooter
+            active={activeTodos}
+            completed={completedTodos}
+            status={filterStatus}
+            filterAll={handleFilterAll}
+            filterActive={handleFilterActive}
+            filterCompleted={handleFilterCompleted}
+            clearCompleted={handleClearCompleted}
+          />
+        )}
+      </div>
+
+      <ErrorNotification onHide={handleHideBtn} errorMessage={errorMessage} />
+    </div>
   );
 };
