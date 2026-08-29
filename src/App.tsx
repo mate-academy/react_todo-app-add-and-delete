@@ -7,6 +7,20 @@ import { Todo } from './types/Todo';
 import { TodoMain } from './components/TodoMain/TodoMain';
 import { ErrorNotification } from './components/ErrorNotif/ErrorNotification';
 import { TodoFooter } from './components/TodoFooter/TodoFooter';
+import { filterTypes } from './utils/filterTypes';
+
+enum FilterStatus {
+  All = 'all',
+  Active = 'active',
+  Completed = 'completed',
+}
+
+enum ErrorMessage {
+  LoadError = 'Unable to load todos',
+  TitleError = 'Title should not be empty',
+  AddError = 'Unable to add a todo',
+  DeleteError = 'Unable to delete a todo',
+}
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -25,7 +39,7 @@ export const App: React.FC = () => {
         setTodos(data);
       })
       .catch(() => {
-        setErrorMessage('Unable to load todos');
+        setErrorMessage(ErrorMessage.LoadError);
         setTimeout(() => setErrorMessage(null), 3000);
       });
   }, []);
@@ -37,11 +51,11 @@ export const App: React.FC = () => {
   }, [isInputDisabled]);
 
   const filteredTodos = todos.filter(todo => {
-    if (filterStatus === 'active' && todo.completed) {
+    if (filterStatus === FilterStatus.Active && todo.completed) {
       return false;
     }
 
-    if (filterStatus === 'completed' && !todo.completed) {
+    if (filterStatus === FilterStatus.Completed && !todo.completed) {
       return false;
     }
 
@@ -52,7 +66,7 @@ export const App: React.FC = () => {
     const trimmedTitle = title.trim();
 
     if (!trimmedTitle) {
-      setErrorMessage('Title should not be empty');
+      setErrorMessage(ErrorMessage.TitleError);
       setTimeout(() => setErrorMessage(null), 3000);
 
       return;
@@ -76,13 +90,18 @@ export const App: React.FC = () => {
         setQuery('');
       })
       .catch(() => {
-        setErrorMessage('Unable to add a todo');
+        setErrorMessage(ErrorMessage.AddError);
         setTimeout(() => setErrorMessage(null), 3000);
         setTempTodo(null);
       })
       .finally(() => {
         setIsInputDisabled(false);
       });
+  };
+
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+    handleAddTodo(query);
   };
 
   const handleDeleteTodo = (todoId: number) => {
@@ -102,7 +121,7 @@ export const App: React.FC = () => {
         );
       })
       .catch(() => {
-        setErrorMessage('Unable to delete a todo');
+        setErrorMessage(ErrorMessage.DeleteError);
         setTimeout(() => setErrorMessage(null), 3000);
       })
       .finally(() => {
@@ -139,7 +158,7 @@ export const App: React.FC = () => {
         );
 
         if (hasError) {
-          setErrorMessage('Unable to delete a todo');
+          setErrorMessage(ErrorMessage.DeleteError);
           setTimeout(() => setErrorMessage(null), 3000);
         }
       })
@@ -161,16 +180,18 @@ export const App: React.FC = () => {
     return completed.length;
   };
 
-  const handleFilterActive = () => {
-    setFilterStatus('active');
-  };
+  const handleFilterChange = (type: string) => {
+    if (type === FilterStatus.All) {
+      setFilterStatus(FilterStatus.All);
+    }
 
-  const handleFilterCompleted = () => {
-    setFilterStatus('completed');
-  };
+    if (type === FilterStatus.Active) {
+      setFilterStatus(FilterStatus.Active);
+    }
 
-  const handleFilterAll = () => {
-    setFilterStatus('all');
+    if (type === FilterStatus.Completed) {
+      setFilterStatus(FilterStatus.Completed);
+    }
   };
 
   const handleHideBtn = () => {
@@ -197,12 +218,7 @@ export const App: React.FC = () => {
             data-cy="ToggleAllButton"
           />
 
-          <form
-            onSubmit={event => {
-              event.preventDefault();
-              handleAddTodo(query);
-            }}
-          >
+          <form onSubmit={handleSubmit}>
             <input
               ref={textInputRef}
               data-cy="NewTodoField"
@@ -231,9 +247,8 @@ export const App: React.FC = () => {
             active={activeTodos}
             completed={completedTodos}
             status={filterStatus}
-            filterAll={handleFilterAll}
-            filterActive={handleFilterActive}
-            filterCompleted={handleFilterCompleted}
+            onFilterChange={handleFilterChange}
+            filterTypes={filterTypes}
             clearCompleted={handleClearCompleted}
           />
         )}
