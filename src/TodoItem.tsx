@@ -8,11 +8,18 @@ type TodoItemProps = {
   onDelete?: () => void;
 };
 
-export const TodoItem: React.FC<TodoItemProps> = ({ todo, isProcessed, onDelete }) => {
+export const TodoItem: React.FC<TodoItemProps> = ({
+  todo,
+  isProcessed,
+  onDelete,
+}) => {
   const checkboxId = `todo-${todo.id}`;
 
   return (
-    <div className={classNames('todo', { completed: todo.completed })} data-cy="Todo">
+    <div
+      className={classNames('todo', { completed: todo.completed })}
+      data-cy="Todo"
+    >
       <label
         className="todo__status-label"
         htmlFor={checkboxId}

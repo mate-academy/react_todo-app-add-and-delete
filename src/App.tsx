@@ -1,18 +1,12 @@
-/* eslint-disable max-len */
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import classNames from 'classnames';
 import { UserWarning } from './UserWarning';
 import { ErrorMessage, Filter, Todo, User } from './types';
-import { TodoItem } from './TodoItem';
+import { TodoForm } from './TodoForm';
+import { TodoList } from './TodoList';
+import { TodoFooter } from './TodoFooter';
+import { ErrorNotification } from './ErrorNotification';
 
 const API_URL = 'https://mate.academy/students-api';
-
-const filterOptions = [
-  { value: Filter.All, label: 'All', dataCy: 'FilterLinkAll' },
-  { value: Filter.Active, label: 'Active', dataCy: 'FilterLinkActive' },
-  { value: Filter.Completed, label: 'Completed', dataCy: 'FilterLinkCompleted' },
-] as const;
 
 const getUserFromStorage = (): User | null => {
   const rawUser = window.localStorage.getItem('user');
@@ -126,7 +120,6 @@ export const App: React.FC = () => {
   const activeTodosCount = todos.filter(todo => !todo.completed).length;
   const hasCompletedTodos = todos.some(todo => todo.completed);
   const shouldShowFooter = todos.length > 0 || Boolean(tempTodo);
-  const shouldShowFilter = todos.length > 0;
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -267,85 +260,35 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <header className="todoapp__header">
-          <form onSubmit={handleSubmit}>
-            <input
-              ref={inputRef}
-              className="todoapp__new-todo"
-              data-cy="NewTodoField"
-              type="text"
-              placeholder="What needs to be done?"
-              value={title}
-              onChange={event => setTitle(event.target.value)}
-              disabled={isInputDisabled}
-            />
-          </form>
-        </header>
+        <TodoForm
+          inputRef={inputRef}
+          title={title}
+          isDisabled={isInputDisabled}
+          onTitleChange={setTitle}
+          onSubmit={handleSubmit}
+        />
 
-        <section className="todoapp__main" data-cy="TodoList">
-          {visibleTodos.map(todo => (
-            <TodoItem
-              key={todo.id}
-              todo={todo}
-              onDelete={() => handleDelete(todo.id)}
-              isProcessed={processingIds.includes(todo.id)}
-            />
-          ))}
-
-          {tempTodo && <TodoItem todo={tempTodo} isProcessed={isCreating} />}
-        </section>
+        <TodoList
+          todos={visibleTodos}
+          tempTodo={tempTodo}
+          processingIds={processingIds}
+          isCreating={isCreating}
+          onDelete={handleDelete}
+        />
 
         {shouldShowFooter && (
-          <footer className="todoapp__footer">
-            <span className="todoapp__count" data-cy="TodosCounter">
-              {`${activeTodosCount} item${activeTodosCount === 1 ? '' : 's'} left`}
-            </span>
-
-            {shouldShowFilter && (
-              <div className="todoapp__filters" data-cy="Filter">
-                {filterOptions.map(option => (
-                  <button
-                    key={option.value}
-                    type="button"
-                    className={classNames('todoapp__filter', {
-                      selected: filter === option.value,
-                    })}
-                    data-cy={option.dataCy}
-                    onClick={() => setFilter(option.value)}
-                  >
-                    {option.label}
-                  </button>
-                ))}
-              </div>
-            )}
-
-            {todos.length > 0 && (
-              <button
-                type="button"
-                className="todoapp__clear-completed"
-                data-cy="ClearCompletedButton"
-                onClick={handleClearCompleted}
-                disabled={!hasCompletedTodos}
-              >
-                Clear completed
-              </button>
-            )}
-          </footer>
+          <TodoFooter
+            activeTodosCount={activeTodosCount}
+            filter={filter}
+            hasCompletedTodos={hasCompletedTodos}
+            hasTodos={todos.length > 0}
+            onFilterChange={setFilter}
+            onClearCompleted={handleClearCompleted}
+          />
         )}
       </div>
 
-      <div
-        className={classNames('notification is-danger', { hidden: !error })}
-        data-cy="ErrorNotification"
-      >
-        <button
-          type="button"
-          className="delete"
-          data-cy="HideErrorButton"
-          onClick={() => setError(null)}
-        />
-        {error}
-      </div>
+      <ErrorNotification error={error} onClose={() => setError(null)} />
     </section>
   );
 };
