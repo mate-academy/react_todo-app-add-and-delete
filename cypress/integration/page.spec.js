@@ -52,8 +52,9 @@ const page = {
   },
   mockDelete: (id, response) => {
     const options = { method: 'DELETE', url: `**/todos/${id}` };
+    const defaultResponse = { delayMs: 2000, body: '1' };
 
-    return cy.intercept(options, response || { body: '1' });
+    return cy.intercept(options, response || defaultResponse);
   },
   mockUpdate: (id, response) => {
     const todo = mixedTodos.find(todo => todo.id === id) || {};
@@ -164,6 +165,7 @@ describe('', () => {
         // to prevent Cypress from failing the test on uncaught exception
         cy.once('uncaught:exception', () => false);
 
+        page.pauseTimers();
         page.mockLoad({ statusCode: 404, body: 'Not found' }).as('loadRequest');
         page.visit();
         cy.wait('@loadRequest');
@@ -407,6 +409,7 @@ describe('', () => {
 
     describe('if title is empty', () => {
       beforeEach(() => {
+        page.pauseTimers();
         page.mockCreate();
         page.newTodoField().type('{enter}');
       });
@@ -436,6 +439,7 @@ describe('', () => {
 
     describe('if title title has only whitespaces', () => {
       beforeEach(() => {
+        page.pauseTimers();
         page.mockCreate();
         page.newTodoField().type('     {enter}');
       });
@@ -465,27 +469,37 @@ describe('', () => {
 
     describe('after form submition before response is received', () => {
       beforeEach(() => {
-        page.mockCreate();
-        page.pauseTimers();
+        page.mockCreate({
+          delayMs: 2000,
+          statusCode: 201,
+          body: {
+            id: 1000,
+            title: 'Test Todo',
+            completed: false,
+            userId: 1,
+          },
+        }).as('createRequest');
         page.newTodoField().type('Test Todo{enter}');
       });
 
       it('should send a create request', () => {
-        cy.tick(1000);
-        cy.get('@createCallback').should('have.callCount', 1);
+        cy.wait('@createRequest');
       });
 
       it('should disable the input', () => {
         page.newTodoField().should('be.disabled');
+        cy.wait('@createRequest');
       });
 
       it('should keep entered text', () => {
         page.newTodoField().should('have.value', 'Test Todo');
+        cy.wait('@createRequest');
       });
 
       it('should create and show a temp TodoItem with Loader', () => {
         todos.assertCount(6);
         todos.assertLoading(5);
+        cy.wait('@createRequest');
       });
 
       it('should show a temp TodoItem with correct title', () => {
@@ -596,6 +610,7 @@ describe('', () => {
         // to prevent Cypress from failing the test on uncaught exception
         cy.once('uncaught:exception', () => false);
 
+        page.pauseTimers();
         page.mockCreate({ statusCode: 503, body: 'Service Unavailable' })
           .as('createRequest');
 
@@ -644,8 +659,18 @@ describe('', () => {
       });
 
       it('should immediately hide an error message on new request', () => {
+        // to prevent Cypress from failing the test on uncaught exception
+        cy.once('uncaught:exception', () => false);
+
+        page.mockCreate({
+          delayMs: 2000,
+          statusCode: 503,
+          body: 'Service Unavailable',
+        }).as('createRequest2');
+
         page.newTodoField().type(`{enter}`);
         errorMessage.assertHidden();
+        cy.wait('@createRequest2');
       });
 
       it('should show an error message again on a next fail', () => {
@@ -732,7 +757,7 @@ describe('', () => {
       });
 
       it('should display a loader on the todo when the TodoDeleteButton is clicked', () => {
-        page.mockDelete(257334);
+        page.mockDelete(257334, { delayMs: 2000, body: '1' });
         page.pauseTimers();
         todos.deleteButton(0).click();
 
@@ -740,7 +765,7 @@ describe('', () => {
       });
 
       it('should not delete a todo before successful response', () => {
-        page.mockDelete(257334);
+        page.mockDelete(257334, { delayMs: 2000, body: '1' });
         page.pauseTimers();
         todos.deleteButton(0).click();
 
