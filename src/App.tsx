@@ -106,6 +106,7 @@ export const App: React.FC = () => {
             setIsError={setIsError}
             USER_ID={USER_ID}
             ErrorMessages={ErrorMessages}
+            setErrorMessage={setErrorMessage}
           />
         )}
         {/* Hide the footer if there are no todos */}

@@ -12,7 +12,6 @@ type Props = {
   getTodos: () => void;
   setTodos: (todos: Todo[]) => void;
   tempTodo: Todo | null;
-  // setTempTodo: (el: Todo | null) => void;
   isLoading: boolean;
   setIsLoading: (el: boolean) => void;
   isAdding: boolean;
@@ -27,7 +26,6 @@ type Props = {
 
 export const TodoApp: React.FC<Props> = ({
   todos,
-  setTodos,
   isLoading,
   statusFilter,
   tempTodo,
@@ -53,8 +51,8 @@ export const TodoApp: React.FC<Props> = ({
 
       if (deleted === 1) {
         if (todos) {
-          setTodos(todos.filter(todo => todo.id !== deleted));
-          getTodos();
+          // setTodos(todos.filter(todo => todo.id !== deleted));
+          await getTodos();
         }
       }
     } catch (error) {
