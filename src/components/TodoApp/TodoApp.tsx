@@ -1,7 +1,6 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 
-import { getTodos } from '../../api/todos';
 import { Todo } from '../../types/Todo';
 import { client } from '../../utils/fetchClient';
 import { Loader } from '../Loader';
@@ -9,7 +8,6 @@ import { useState } from 'react';
 
 type Props = {
   todos: Todo[] | null;
-  getTodos: () => void;
   setTodos: (todos: Todo[]) => void;
   tempTodo: Todo | null;
   isLoading: boolean;
@@ -26,6 +24,7 @@ type Props = {
 
 export const TodoApp: React.FC<Props> = ({
   todos,
+  setTodos,
   isLoading,
   statusFilter,
   tempTodo,
@@ -45,16 +44,10 @@ export const TodoApp: React.FC<Props> = ({
   });
   const [title, setTitle] = useState('');
 
-  const removeTodo = async (id: string) => {
+  const removeTodo = async (id: number) => {
     try {
-      const deleted = await client.delete(`/todos/${id}`);
-
-      if (deleted === 1) {
-        if (todos) {
-          // setTodos(todos.filter(todo => todo.id !== deleted));
-          await getTodos();
-        }
-      }
+      await client.delete(`/todos/${id}`);
+      setTodos(todos.filter(todo => todo.id !== id));
     } catch (error) {
       setErrorMessage(ErrorMessages.Delete);
     } finally {
