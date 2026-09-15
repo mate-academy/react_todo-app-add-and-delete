@@ -35,7 +35,7 @@ export const Footer: React.FC<Props> = ({
     setIsLoading(true);
     try {
       await client.delete(`/todos/${id}`);
-      setTodos(todos.filter(todo => todo.id !== id));
+      setTodos(currentTodos => currentTodos.filter(todo => todo.id !== id));
     } catch (error) {
       setIsError(true);
       setErrorMessage(ErrorMessages.Delete);
