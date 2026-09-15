@@ -26,6 +26,7 @@ export const TodoApp: React.FC<Props> = ({
   todos,
   setTodos,
   isLoading,
+  setIsLoading,
   statusFilter,
   tempTodo,
   ErrorMessages,
@@ -45,13 +46,14 @@ export const TodoApp: React.FC<Props> = ({
   const [title, setTitle] = useState('');
 
   const removeTodo = async (id: number) => {
+    setIsLoading(true);
     try {
       await client.delete(`/todos/${id}`);
       setTodos(todos.filter(todo => todo.id !== id));
     } catch (error) {
       setErrorMessage(ErrorMessages.Delete);
     } finally {
-      // console.log(todos);
+      setIsLoading(false);
     }
   };
 

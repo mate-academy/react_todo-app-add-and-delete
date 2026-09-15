@@ -73,10 +73,7 @@ export const Header: React.FC<Props> = ({
       };
 
       try {
-        const createdTodo: Todo = await client.post(
-          `/todos?userId=${USER_ID}`,
-          el,
-        );
+        const createdTodo: Todo = await client.post(`/todos`, el);
 
         setTempTodo(null);
         setTodos([...(todos || []), createdTodo]);
