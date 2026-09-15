@@ -44,12 +44,16 @@ export const Footer: React.FC<Props> = ({
     }
   };
 
-  const handleClearCompleted = () => {
-    const completedTodos = todos?.filter(todo => todo.completed);
+  const handleClearCompleted = async () => {
+    const completedTodos = todos?.filter(todo => todo.completed) || [];
 
-    completedTodos?.forEach(todo => {
-      removeTodo(todo.id);
-    });
+    const deletePromises = completedTodos.map(todo =>
+      client.delete(`/todos/${todo.id}`),
+    );
+
+    await Promise.all(deletePromises);
+
+    setTodos(currentTodos => currentTodos.filter(todo => !todo.completed));
   };
 
   return (
