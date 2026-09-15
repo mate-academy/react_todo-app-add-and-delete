@@ -15,7 +15,7 @@ type Props = {
   setIsError: (el: boolean) => void;
   setErrorMessage: (el: string) => void;
   USER_ID: number;
-  onCreate: () => void;
+  createCallback: () => void;
   ErrorMessages: {
     None: string;
     Load: string;
@@ -36,7 +36,7 @@ export const Header: React.FC<Props> = ({
   setIsError,
   setErrorMessage,
   USER_ID,
-  onCreate,
+  createCallback,
   ErrorMessages,
 }) => {
   const [title, setTitle] = useState('');
@@ -71,12 +71,15 @@ export const Header: React.FC<Props> = ({
       };
 
       try {
-        const createdTodo: Todo = await client.post(`/todos`, el);
+        const createdTodo: Todo = await client.post(
+          `/todos?userId=${USER_ID}`,
+          el,
+        );
 
         setTempTodo(null);
         setTodos([...(todos || []), createdTodo]);
         setTitle('');
-        onCreate();
+        createCallback();
         // return createdTodo;
       } catch {
         setIsError(true);

@@ -87,7 +87,7 @@ export const App: React.FC = () => {
           setIsError={setIsError}
           setErrorMessage={setErrorMessage}
           USER_ID={USER_ID}
-          onCreate={onCreate}
+          createCallback={onCreate}
           ErrorMessages={ErrorMessages}
         />
 
@@ -118,6 +118,7 @@ export const App: React.FC = () => {
             setStatusFilter={setStatusFilter}
             setIsError={setIsError}
             setErrorMessage={setErrorMessage}
+            USER_ID={USER_ID}
           />
         )}
         {/* <Loader isLoading={isLoading} /> */}
