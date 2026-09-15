@@ -82,6 +82,7 @@ export const Header: React.FC<Props> = ({
         // return createdTodo;
       } catch {
         setIsError(true);
+        setTempTodo(null);
         setErrorMessage(ErrorMessages.Add);
         throw new Error(ErrorMessages.Add);
       } finally {

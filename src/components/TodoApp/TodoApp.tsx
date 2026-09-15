@@ -9,6 +9,7 @@ import { useState } from 'react';
 type Props = {
   todos: Todo[] | null;
   setTodos: (todos: Todo[]) => void;
+  setIsError: (bol: boolean) => void;
   tempTodo: Todo | null;
   isLoading: boolean;
   setIsLoading: (el: boolean) => void;
@@ -25,6 +26,7 @@ type Props = {
 export const TodoApp: React.FC<Props> = ({
   todos,
   setTodos,
+  setIsError,
   isLoading,
   setIsLoading,
   statusFilter,
@@ -44,6 +46,7 @@ export const TodoApp: React.FC<Props> = ({
     return true;
   });
   const [title, setTitle] = useState('');
+  const [deletedId, setDeletedId] = useState(0);
 
   const removeTodo = async (id: number) => {
     setIsLoading(true);
@@ -51,6 +54,7 @@ export const TodoApp: React.FC<Props> = ({
       await client.delete(`/todos/${id}`);
       setTodos(todos.filter(todo => todo.id !== id));
     } catch (error) {
+      setIsError(true);
       setErrorMessage(ErrorMessages.Delete);
     } finally {
       setIsLoading(false);
@@ -88,13 +92,14 @@ export const TodoApp: React.FC<Props> = ({
                 className="todo__remove"
                 data-cy="TodoDelete"
                 onClick={() => {
+                  setDeletedId(el.id);
                   removeTodo(el.id);
                 }}
               >
                 ×
               </button>
 
-              <Loader isLoading={isLoading} />
+              <Loader isLoading={el.id === deletedId} />
             </div>
           );
         })}
