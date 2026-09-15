@@ -16,12 +16,8 @@ type Props = {
 export const Footer: React.FC<Props> = ({
   todos,
   setTodos,
-  setIsLoading,
   statusFilter,
   setStatusFilter,
-  setIsError,
-  ErrorMessages,
-  setErrorMessage,
 }) => {
   const setStatus = (
     val: string,
@@ -29,19 +25,6 @@ export const Footer: React.FC<Props> = ({
   ) => {
     event.preventDefault();
     setStatusFilter(val);
-  };
-
-  const removeTodo = async (id: number) => {
-    setIsLoading(true);
-    try {
-      await client.delete(`/todos/${id}`);
-      setTodos(currentTodos => currentTodos.filter(todo => todo.id !== id));
-    } catch (error) {
-      setIsError(true);
-      setErrorMessage(ErrorMessages.Delete);
-    } finally {
-      setIsLoading(false);
-    }
   };
 
   const handleClearCompleted = async () => {

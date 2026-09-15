@@ -46,9 +46,7 @@ export const Header: React.FC<Props> = ({
 
   useEffect(() => {
     if (!isAdding && !isLoading) {
-      setTimeout(() => {
-        inputRef.current?.focus();
-      }, 0);
+      inputRef.current?.focus();
     }
   }, [isAdding, isLoading]);
 
