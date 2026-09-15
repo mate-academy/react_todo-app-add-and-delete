@@ -112,8 +112,12 @@ export const App: React.FC = () => {
         {todos && todos.length > 0 && (
           <Footer
             todos={todos}
+            setTodos={setTodos}
+            setIsLoading={setIsLoading}
             statusFilter={statusFilter}
             setStatusFilter={setStatusFilter}
+            setIsError={setIsError}
+            setErrorMessage={setErrorMessage}
           />
         )}
         {/* <Loader isLoading={isLoading} /> */}

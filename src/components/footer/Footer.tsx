@@ -1,16 +1,27 @@
 import React from 'react';
 import { Todo } from '../../types/Todo';
+import { client } from '../../utils/fetchClient';
 
 type Props = {
   todos: Todo[] | null;
+  setTodos: (todos: Todo[]) => void;
+  setIsLoading: (el: boolean) => void;
   statusFilter: string;
   setStatusFilter: (filter: string) => void;
+  setIsError: (el: boolean) => void;
+  ErrorMessages: { None: string; Delete: string };
+  setErrorMessage: (msg: string) => void;
 };
 
 export const Footer: React.FC<Props> = ({
   todos,
+  setTodos,
+  setIsLoading,
   statusFilter,
   setStatusFilter,
+  setIsError,
+  ErrorMessages,
+  setErrorMessage,
 }) => {
   const setStatus = (
     val: string,
@@ -18,6 +29,27 @@ export const Footer: React.FC<Props> = ({
   ) => {
     event.preventDefault();
     setStatusFilter(val);
+  };
+
+  const removeTodo = async (id: number) => {
+    setIsLoading(true);
+    try {
+      await client.delete(`/todos/${id}`);
+      setTodos(todos.filter(todo => todo.id !== id));
+    } catch (error) {
+      setIsError(true);
+      setErrorMessage(ErrorMessages.Delete);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleClearCompleted = () => {
+    const completedTodos = todos?.filter(todo => todo.completed);
+
+    completedTodos?.forEach(todo => {
+      removeTodo(todo.id);
+    });
   };
 
   return (
@@ -67,6 +99,8 @@ export const Footer: React.FC<Props> = ({
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
+        disabled={todos?.filter(todo => todo.completed).length === 0}
+        onClick={handleClearCompleted}
       >
         Clear completed
       </button>

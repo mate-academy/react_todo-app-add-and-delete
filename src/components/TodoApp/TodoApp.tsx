@@ -17,7 +17,6 @@ type Props = {
   setIsAdding: (el: boolean) => void;
   statusFilter: string;
   isError: boolean;
-  setIsError: (el: boolean) => void;
   USER_ID: number;
   ErrorMessages: { None: string; Delete: string };
   setErrorMessage: (msg: string) => void;
