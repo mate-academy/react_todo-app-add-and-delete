@@ -57,7 +57,7 @@ export const App: React.FC = () => {
     getTodos();
   }, []);
 
-  const onCreate = () => {
+  const createCallback = () => {
     getTodos();
     setTempTodo(null);
   };
@@ -87,7 +87,7 @@ export const App: React.FC = () => {
           setIsError={setIsError}
           setErrorMessage={setErrorMessage}
           USER_ID={USER_ID}
-          createCallback={onCreate}
+          createCallback={createCallback}
           ErrorMessages={ErrorMessages}
         />
 
