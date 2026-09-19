@@ -4,7 +4,13 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import { UserWarning } from './UserWarning';
 
-import { deleteTodo, getTodos, postTodo, USER_ID } from './api/todos';
+import {
+  deleteTodo,
+  getComplitedTodos,
+  getTodos,
+  postTodo,
+  USER_ID,
+} from './api/todos';
 
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
@@ -87,23 +93,21 @@ export const App: React.FC = () => {
   const handelOnCompletedMarkClik = () => {};
 
   const handelOnDeleteClik = (id: number) => {
-    setDiletingTodos([...deletingTodos, id]);
+    setDiletingTodos(prevdeletingTodos => [...prevdeletingTodos, id]);
 
     deleteTodo(id)
       .then(() => {
-        const idexToDelete = todos.findIndex(todo => todo.id === id);
-
-        setTodos([
-          ...todos.slice(0, idexToDelete),
-          ...todos.slice(idexToDelete + 1, todos.length),
-        ]);
+        setTodos(prevtodos => prevtodos.filter(todo => todo.id !== id));
       })
       .catch(() => {
         setError(TypeError.UnableDeleteTodo);
       })
       .finally(() => {
-        setTimeout(() => setError(TypeError.None), 3000);
-        setDiletingTodos(deletingTodos.filter(deletingId => deletingId !== id));
+        closeErrorMesseg();
+
+        setDiletingTodos(prevdeletingTodos =>
+          prevdeletingTodos.filter(deletingId => deletingId !== id),
+        );
       });
   };
 
@@ -121,7 +125,14 @@ export const App: React.FC = () => {
   };
 
   const handelDeleteCompletedTodos = () => {
-    return;
+    getComplitedTodos(USER_ID)
+      .then(complitedTodos => {
+        complitedTodos.forEach(({ id }) => {
+          handelOnDeleteClik(id);
+        });
+      })
+      .catch(() => setError(TypeError.UnableDeleteTodo))
+      .finally(closeErrorMesseg);
   };
 
   // #endregion
@@ -141,7 +152,7 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     refQuery.current?.focus();
-  }, [creatingTodo]);
+  }, [creatingTodo, todos]);
   // #endregion
 
   if (!USER_ID) {
