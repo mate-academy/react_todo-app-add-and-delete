@@ -3,14 +3,16 @@ import cn from 'classnames';
 
 type Props = {
   isAllTodoDone: boolean;
+  isCreatingTodo: boolean;
   refQuery: React.Ref<HTMLInputElement>;
-  onSubmitTodo: () => void;
+  onSubmitTodo: (event: React.FormEvent<HTMLFormElement>) => void;
   onToggleAllTodo: () => void;
 };
 
 export const Header: React.FC<Props> = ({
   refQuery,
   isAllTodoDone,
+  isCreatingTodo,
   onSubmitTodo,
   onToggleAllTodo,
 }) => {
@@ -30,6 +32,7 @@ export const Header: React.FC<Props> = ({
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
+          disabled={isCreatingTodo}
           ref={refQuery}
         />
       </form>

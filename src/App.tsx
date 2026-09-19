@@ -1,29 +1,28 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useRef, useState } from 'react';
+
 import { UserWarning } from './UserWarning';
-import { getTodos, USER_ID } from './api/todos';
+
+import { deleteTodo, getTodos, postTodo, USER_ID } from './api/todos';
+
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { Todos } from './components/Todos';
-import { Todo } from './types/Todo';
-import { TodoFilter } from './utils/filterTodos/TodoFilter';
-import { TodoFilterStatus } from './types/TodoFilterStatus';
-import cn from 'classnames';
 
-enum TypeError {
-  None = '',
-  UnableLoadTodos = 'unableLoadTodos',
-  UnableAddTodo = 'unableAddTodo',
-  UnableDeleteTodo = 'unableDeleteTodo',
-  UnableUpdateTodo = 'unableUpdateTodo',
-  TitleEmpty = 'titleEmpty',
-}
+import { Todo } from './types/Todo';
+import { TodoFilterStatus } from './types/TodoFilterStatus';
+import { TypeError } from './types/TypeError';
+
+import { TodoFilter } from './utils/filterTodos/TodoFilter';
+import { ErrorNotification } from './components/ErrorNotification';
 
 export const App: React.FC = () => {
   const refQuery = useRef<HTMLInputElement>(null);
 
   const [todos, setTodos] = useState<Todo[]>([]);
+  const [creatingTodo, setCreatingTodo] = useState<Todo | null>(null);
+  const [deletingTodos, setDiletingTodos] = useState<number[]>([]);
   const [error, setError] = useState<TypeError>(TypeError.None);
   const [todoFilterState, setTodoFilterState] = useState<TodoFilterStatus>(
     TodoFilterStatus.All,
@@ -34,15 +33,84 @@ export const App: React.FC = () => {
     TodoFilter.FilterByComplit(todoFilterState),
   );
 
+  //#region supportFunctions
+  function getComplitedTodo() {
+    return todos.reduce((prec, todo) => (todo.completed ? prec + 1 : prec), 0);
+  }
+
+  function closeErrorMesseg() {
+    setTimeout(() => setError(TypeError.None), 3000);
+  }
+
+  //#endregion
+
   // #region HeaderHandels
 
-  const handelOnSummit = () => {
-    return;
+  const handelOnSummit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const newTitle = refQuery.current?.value.trim() || '';
+
+    if (newTitle.length > 0) {
+      const newTodo = { userId: USER_ID, title: newTitle, completed: false };
+
+      postTodo(newTodo)
+        .then(createdtodo => {
+          setTodos([...todos, createdtodo]);
+          if (refQuery.current) {
+            refQuery.current.value = '';
+          }
+        })
+        .catch(() => {
+          setError(TypeError.UnableAddTodo);
+        })
+        .finally(() => {
+          setCreatingTodo(null);
+          closeErrorMesseg();
+        });
+
+      setCreatingTodo({ ...newTodo, id: 0 });
+    } else {
+      setError(TypeError.TitleEmpty);
+      closeErrorMesseg();
+    }
   };
 
   const handelOnToggleAllTodo = () => {
     return;
   };
+
+  //#endregion
+
+  //#region TodosHandels
+
+  const handelOnCompletedMarkClik = () => {};
+
+  const handelOnDeleteClik = (id: number) => {
+    setDiletingTodos([...deletingTodos, id]);
+
+    deleteTodo(id)
+      .then(() => {
+        const idexToDelete = todos.findIndex(todo => todo.id === id);
+
+        setTodos([
+          ...todos.slice(0, idexToDelete),
+          ...todos.slice(idexToDelete + 1, todos.length),
+        ]);
+      })
+      .catch(() => {
+        setError(TypeError.UnableDeleteTodo);
+      })
+      .finally(() => {
+        setTimeout(() => setError(TypeError.None), 3000);
+        setDiletingTodos(deletingTodos.filter(deletingId => deletingId !== id));
+      });
+  };
+
+  const handelOnEditClik = () => {};
+
+  const handelDelaitingAnimations = (id: number) =>
+    !!deletingTodos.includes(id);
 
   //#endregion
 
@@ -61,43 +129,20 @@ export const App: React.FC = () => {
   //#region useEffect
 
   useEffect(() => {
-    new Promise(resolve => {
-      setTimeout(resolve, 1000);
-    }).then(() => setError(TypeError.None));
-  }, [error]);
-
-  useEffect(() => {
     getTodos(USER_ID)
       .then(newTodos => {
         setTodos(newTodos);
       })
       .catch(() => {
         setError(TypeError.UnableLoadTodos);
-      });
+      })
+      .finally(closeErrorMesseg);
   }, []);
 
+  useEffect(() => {
+    refQuery.current?.focus();
+  }, [creatingTodo]);
   // #endregion
-
-  function getComplitedTodo() {
-    return todos.reduce((prec, todo) => (todo.completed ? prec + 1 : prec), 0);
-  }
-
-  function getErrorMesseg() {
-    switch (error) {
-      case TypeError.TitleEmpty:
-        return 'Title should not be empty';
-      case TypeError.UnableAddTodo:
-        return 'Unable to add a todo';
-      case TypeError.UnableDeleteTodo:
-        return 'Unable to delete a todo';
-      case TypeError.UnableLoadTodos:
-        return 'Unable to load todos';
-      case TypeError.UnableUpdateTodo:
-        return 'Unable to update a todo';
-      default:
-        return '';
-    }
-  }
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -111,15 +156,18 @@ export const App: React.FC = () => {
         <Header
           refQuery={refQuery}
           isAllTodoDone={true}
+          isCreatingTodo={!!creatingTodo}
           onSubmitTodo={handelOnSummit}
           onToggleAllTodo={handelOnToggleAllTodo}
         />
 
         <Todos
           todos={filtredTodo}
-          onCompletedMarkClik={() => {}}
-          onDeleteClik={() => {}}
-          onEditClik={() => {}}
+          creatingTodo={creatingTodo}
+          isDeleting={handelDelaitingAnimations}
+          onCompletedMarkClik={handelOnCompletedMarkClik}
+          onDeleteClik={handelOnDeleteClik}
+          onEditClik={handelOnEditClik}
         />
 
         <Footer
@@ -133,19 +181,7 @@ export const App: React.FC = () => {
 
       {/* DON'T use conditional rendering to hide the notification */}
       {/* Add the 'hidden' class to hide the message smoothly */}
-      <div
-        data-cy="ErrorNotification"
-        className={cn(
-          'notification',
-          'is-danger',
-          'is-light',
-          'has-text-weight-normal',
-          { hidden: error === TypeError.None },
-        )}
-      >
-        <button data-cy="HideErrorButton" type="button" className="delete" />
-        {getErrorMesseg()}
-      </div>
+      <ErrorNotification errorType={error} />
     </div>
   );
 };

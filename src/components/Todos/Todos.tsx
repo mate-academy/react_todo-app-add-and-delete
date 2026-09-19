@@ -1,22 +1,31 @@
 import React from 'react';
-import ch from 'classnames';
+import cn from 'classnames';
 import { Todo } from '../../types/Todo';
 
 type Props = {
   todos: Todo[];
-  onCompletedMarkClik: () => void;
-  onEditClik: () => void;
-  onDeleteClik: () => void;
+  creatingTodo: Todo | null;
+  isDeleting: (id: number) => boolean;
+  onCompletedMarkClik: (id: number) => void;
+  onEditClik: (id: number) => void;
+  onDeleteClik: (id: number) => void;
 };
 
-export const Todos: React.FC<Props> = ({ todos }) => {
+export const Todos: React.FC<Props> = ({
+  todos,
+  creatingTodo,
+  isDeleting,
+  onCompletedMarkClik,
+  onDeleteClik,
+  onEditClik,
+}) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {todos.map(({ id, completed, title }) => {
         return (
           <div
             data-cy="Todo"
-            className={ch('todo', { completed: completed })}
+            className={cn('todo', { completed: completed })}
             key={id}
           >
             <label className="todo__status-label">
@@ -25,20 +34,37 @@ export const Todos: React.FC<Props> = ({ todos }) => {
                 type="checkbox"
                 className="todo__status"
                 checked={completed}
+                onChange={() => onCompletedMarkClik(id)}
               />{' '}
             </label>
 
-            <span data-cy="TodoTitle" className="todo__title">
+            <span
+              data-cy="TodoTitle"
+              className="todo__title"
+              onDoubleClick={() => {
+                onEditClik(id);
+              }}
+            >
               {title}
             </span>
 
             {/* Remove button appears only on hover */}
-            <button type="button" className="todo__remove" data-cy="TodoDelete">
+            <button
+              type="button"
+              className="todo__remove"
+              data-cy="TodoDelete"
+              onClick={() => onDeleteClik(id)}
+            >
               ×
             </button>
 
             {/* overlay will cover the todo while it is being deleted or updated */}
-            <div data-cy="TodoLoader" className="modal overlay">
+            <div
+              data-cy="TodoLoader"
+              className={cn('modal', 'overlay', {
+                'is-active': isDeleting(id),
+              })}
+            >
               <div className="modal-background has-background-white-ter" />
               <div className="loader" />
             </div>
@@ -75,30 +101,28 @@ export const Todos: React.FC<Props> = ({ todos }) => {
       </div> */}
 
       {/* This todo is in loadind state */}
-      {/* <div data-cy="Todo" className="todo">
-        <label className="todo__status-label">
-          <input
-            data-cy="TodoStatus"
-            type="checkbox"
-            className="todo__status"
-          />
-          s
-        </label>
-
-        <span data-cy="TodoTitle" className="todo__title">
-          Todo is being saved now
-        </span>
-
-        <button type="button" className="todo__remove" data-cy="TodoDelete">
-          ×
-        </button>
-
-        * 'is-active' class puts this modal on top of the todo *
-        <div data-cy="TodoLoader" className="modal overlay is-active">
-          <div className="modal-background has-background-white-ter" />
-          <div className="loader" />
+      {creatingTodo && (
+        <div data-cy="Todo" className="todo">
+          <label className="todo__status-label">
+            <input
+              data-cy="TodoStatus"
+              type="checkbox"
+              className="todo__status"
+            />{' '}
+          </label>
+          <span data-cy="TodoTitle" className="todo__title">
+            {creatingTodo.title}
+          </span>
+          <button type="button" className="todo__remove" data-cy="TodoDelete">
+            ×
+          </button>
+          {/* * 'is-active' class puts this modal on top of the todo * */}
+          <div data-cy="TodoLoader" className="modal overlay is-active">
+            <div className="modal-background has-background-white-ter" />
+            <div className="loader" />
+          </div>
         </div>
-      </div> */}
+      )}
     </section>
   );
 };
