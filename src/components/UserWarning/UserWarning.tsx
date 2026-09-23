@@ -1,6 +1,4 @@
-import React from 'react';
-
-export const UserWarning: React.FC = () => (
+export const UserWarning = () => (
   <section className="section">
     <p className="box is-size-3">
       Please get your <b> userId </b>{' '}
