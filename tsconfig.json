@@ -5,6 +5,8 @@
   ],
   "compilerOptions": {
     "sourceMap": false,
-    "types": ["node", "cypress"]
+    "types": ["node", "cypress"],
+    "moduleResolution": "bundler",
+    "target": "ES2015"
   }
 }
