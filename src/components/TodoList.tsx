@@ -20,9 +20,7 @@ export const TodoList: React.FC<Props> = ({
         <TodoItem
           key={todo.id}
           todo={todo}
-          isLoading={
-            todo.id === 0 || processingIds.includes(todo.id)
-          }
+          isLoading={todo.id === 0 || processingIds.includes(todo.id)}
           onDelete={onDelete}
         />
       ))}

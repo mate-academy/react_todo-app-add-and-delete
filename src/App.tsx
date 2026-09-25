@@ -1,19 +1,9 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 
-import React, {
-  FormEvent,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import React, { FormEvent, useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
 
-import {
-  USER_ID,
-  createTodo,
-  deleteTodo,
-  getTodos,
-} from './api/todos';
+import { USER_ID, createTodo, deleteTodo, getTodos } from './api/todos';
 import { Filter, FilterType } from './components/Filter';
 import { TodoList } from './components/TodoList';
 import { Todo } from './types/Todo';
@@ -37,8 +27,7 @@ export const App: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState('');
 
   const inputRef = useRef<HTMLInputElement>(null);
-  const errorTimeoutRef =
-    useRef<ReturnType<typeof setTimeout> | null>(null);
+  const errorTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const showError = (message: string) => {
     if (errorTimeoutRef.current) {
@@ -114,9 +103,7 @@ export const App: React.FC = () => {
   const shouldShowTempTodo = filter !== FILTERS.completed;
 
   const allVisibleTodos =
-    shouldShowTempTodo && tempTodo
-      ? [...visibleTodos, tempTodo]
-      : visibleTodos;
+    shouldShowTempTodo && tempTodo ? [...visibleTodos, tempTodo] : visibleTodos;
 
   const allTodosCompleted =
     todos.length > 0 && todos.every(todo => todo.completed);
@@ -151,10 +138,7 @@ export const App: React.FC = () => {
 
     createTodo(title)
       .then(createdTodo => {
-        setTodos(currentTodos => [
-          ...currentTodos,
-          createdTodo,
-        ]);
+        setTodos(currentTodos => [...currentTodos, createdTodo]);
 
         setTempTodo(null);
         input.value = '';
@@ -189,9 +173,7 @@ export const App: React.FC = () => {
         showError('Unable to delete a todo');
       })
       .finally(() => {
-        setProcessingIds(currentIds =>
-          currentIds.filter(id => id !== todoId),
-        );
+        setProcessingIds(currentIds => currentIds.filter(id => id !== todoId));
 
         inputRef.current?.focus();
       });
@@ -227,9 +209,7 @@ export const App: React.FC = () => {
       const hasError = results.some(result => !result.success);
 
       setTodos(currentTodos =>
-        currentTodos.filter(
-          todo => !successfulIds.includes(todo.id),
-        ),
+        currentTodos.filter(todo => !successfulIds.includes(todo.id)),
       );
 
       setProcessingIds([]);
@@ -282,21 +262,12 @@ export const App: React.FC = () => {
             />
 
             {todos.length > 0 && (
-              <footer
-                className="todoapp__footer"
-                data-cy="Footer"
-              >
-                <span
-                  className="todo-count"
-                  data-cy="TodosCounter"
-                >
+              <footer className="todoapp__footer" data-cy="Footer">
+                <span className="todo-count" data-cy="TodosCounter">
                   {activeTodos.length} items left
                 </span>
 
-                <Filter
-                  filter={filter}
-                  onFilterChange={setFilter}
-                />
+                <Filter filter={filter} onFilterChange={setFilter} />
 
                 <button
                   type="button"
