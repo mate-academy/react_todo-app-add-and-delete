@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import { createTodo, deleteTodo, getTodos, USER_ID } from './api/todos';
 import { Todo } from './types/Todo';
@@ -25,9 +25,12 @@ export const App: React.FC = () => {
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [title, setTitle] = useState('');
   const [isAddingTodo, setIsAddingTodo] = useState(false);
-  const [deletingTodoId, setDeletingTodoId] = useState<number | null>(null);
+  const [processingTodoIds, setProcessingTodoIds] = useState<number[]>([]);
 
-  const visibleTodos = getVisibleTodos(todos, selectedFilter);
+  const visibleTodos = useMemo(
+    () => getVisibleTodos(todos, selectedFilter),
+    [todos, selectedFilter],
+  );
 
   const editInput = useRef<HTMLInputElement>(null);
   const errorTimerId = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -94,7 +97,7 @@ export const App: React.FC = () => {
   };
 
   const handleDelete = (todo: Todo) => {
-    setDeletingTodoId(todo.id);
+    setProcessingTodoIds(prevIds => [...prevIds, todo.id]);
 
     deleteTodo(todo.id)
       .then(() =>
@@ -102,7 +105,7 @@ export const App: React.FC = () => {
       )
       .catch(() => showError('Unable to delete a todo'))
       .finally(() => {
-        setDeletingTodoId(null);
+        setProcessingTodoIds(prevIds => prevIds.filter(id => id !== todo.id));
 
         editInput.current?.focus();
       });
@@ -110,6 +113,10 @@ export const App: React.FC = () => {
 
   const handleClearCompleted = () => {
     const completedTodos = todos.filter(({ completed }) => completed);
+    const completedTodoIds = completedTodos.map(({ id }) => id);
+
+    setProcessingTodoIds(prevIds => [...prevIds, ...completedTodoIds]);
+
     const deletedRequests = completedTodos.map(({ id }) => deleteTodo(id));
 
     Promise.allSettled(deletedRequests).then(results => {
@@ -121,13 +128,16 @@ export const App: React.FC = () => {
         }
       });
 
+      const successfullyDeletedIds = successfullyDeletedTodos.map(
+        ({ id }) => id,
+      );
+
       setTodos(prevTodos =>
-        prevTodos.filter(
-          todo =>
-            !successfullyDeletedTodos.some(
-              deletedTodo => deletedTodo.id === todo.id,
-            ),
-        ),
+        prevTodos.filter(todo => !successfullyDeletedIds.includes(todo.id)),
+      );
+
+      setProcessingTodoIds(prevIds =>
+        prevIds.filter(id => !completedTodoIds.includes(id)),
       );
 
       if (results.some(result => result.status === 'rejected')) {
@@ -138,13 +148,13 @@ export const App: React.FC = () => {
     });
   };
 
-  const activeTodosCount = todos.filter(
-    todo => todo.completed === false,
-  ).length;
+  const activeTodosCount = useMemo(() => {
+    return todos.filter(todo => todo.completed === false).length;
+  }, [todos]);
 
-  const completedTodosCount = todos.filter(
-    todo => todo.completed === true,
-  ).length;
+  const completedTodosCount = useMemo(() => {
+    return todos.filter(todo => todo.completed === true).length;
+  }, [todos]);
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -182,7 +192,7 @@ export const App: React.FC = () => {
           <>
             <TodoList
               todos={visibleTodos}
-              deletingTodoId={deletingTodoId}
+              processingTodoIds={processingTodoIds}
               onDelete={handleDelete}
             />
 

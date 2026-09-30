@@ -4,22 +4,24 @@ import { TodoItem } from './TodoItem';
 
 type Props = {
   todos: Todo[];
-  deletingTodoId: number | null;
+  processingTodoIds: number[];
   onDelete: (todo: Todo) => void;
 };
 
 export const TodoList: React.FC<Props> = ({
   todos,
-  deletingTodoId,
+  processingTodoIds,
   onDelete,
 }) => (
   <section className="todoapp__main" data-cy="TodoList">
     {todos.map(todo => {
+      const isProcessing = processingTodoIds.includes(todo.id);
+
       return (
         <TodoItem
           todo={todo}
           key={todo.id}
-          isLoading={deletingTodoId === todo.id}
+          isLoading={isProcessing}
           onDelete={onDelete}
         />
       );
