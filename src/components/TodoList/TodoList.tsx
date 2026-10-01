@@ -1,5 +1,5 @@
 import React from 'react';
-import type Todo from '../../types/Todo';
+import type { Todo } from '../../types/Todo';
 import { TodoItem } from '../TodoItem/TodoItem';
 
 /* eslint-disable react/jsx-filename-extension */
@@ -7,13 +7,13 @@ import { TodoItem } from '../TodoItem/TodoItem';
 interface Props {
   todos: Todo[];
   onDelete: (todoId: number) => void;
-  deletingTodoId: number | null;
+  deletingTodoIds: number[];
 }
 
 export const TodoList: React.FC<Props> = ({
   todos,
   onDelete,
-  deletingTodoId,
+  deletingTodoIds,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -21,7 +21,7 @@ export const TodoList: React.FC<Props> = ({
         <TodoItem
           key={todo.id}
           todo={todo}
-          isLoading={todo.id === deletingTodoId}
+          isLoading={deletingTodoIds.includes(todo.id)}
           onDelete={onDelete}
         />
       ))}

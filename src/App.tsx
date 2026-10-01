@@ -22,16 +22,10 @@ export const App: React.FC = () => {
   const [isErrorVisible, setIsErrorVisible] = React.useState(false);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [tempTodo, setTempTodo] = React.useState<Todo | null>(null);
-  const [deletingTodoId, setDeletingTodoId] = React.useState<number | null>(
-    null,
-  );
+  const [deletingTodoIds, setDeletingTodoIds] = React.useState<number[]>([]);
   const newTodoInputRef = React.useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (!USER_ID) {
-      return;
-    }
-
     getTodos()
       .then(data => {
         setTodos(data);
@@ -122,7 +116,9 @@ export const App: React.FC = () => {
   const handleDelete = (todoId: number) => {
     setErrorMessage('');
     setIsErrorVisible(false);
-    setDeletingTodoId(todoId);
+    setDeletingTodoIds(prevIds =>
+      prevIds.includes(todoId) ? prevIds : [...prevIds, todoId],
+    );
 
     deleteTodo(todoId)
       .then(() => {
@@ -134,7 +130,7 @@ export const App: React.FC = () => {
         setIsErrorVisible(true);
       })
       .finally(() => {
-        setDeletingTodoId(null);
+        setDeletingTodoIds(prevIds => prevIds.filter(id => id !== todoId));
         newTodoInputRef.current?.focus();
       });
   };
@@ -143,24 +139,29 @@ export const App: React.FC = () => {
     setErrorMessage('');
     setIsErrorVisible(false);
 
-    todos
-      .filter(todo => todo.completed)
-      .forEach(todo => {
-        deleteTodo(todo.id)
-          .then(() => {
-            setTodos(prevTodos =>
-              prevTodos.filter(currentTodo => currentTodo.id !== todo.id),
-            );
-          })
-          .catch(error => {
-            console.error(`Error deleting todo ${todo.id}:`, error);
-            setErrorMessage('Unable to delete a todo');
-            setIsErrorVisible(true);
-          })
-          .finally(() => {
-            newTodoInputRef.current?.focus();
-          });
-      });
+    const completedTodos = todos.filter(todo => todo.completed);
+
+    setDeletingTodoIds(prevIds => [
+      ...new Set([...prevIds, ...completedTodos.map(todo => todo.id)]),
+    ]);
+
+    completedTodos.forEach(todo => {
+      deleteTodo(todo.id)
+        .then(() => {
+          setTodos(prevTodos =>
+            prevTodos.filter(currentTodo => currentTodo.id !== todo.id),
+          );
+        })
+        .catch(error => {
+          console.error(`Error deleting todo ${todo.id}:`, error);
+          setErrorMessage('Unable to delete a todo');
+          setIsErrorVisible(true);
+        })
+        .finally(() => {
+          setDeletingTodoIds(prevIds => prevIds.filter(id => id !== todo.id));
+          newTodoInputRef.current?.focus();
+        });
+    });
   };
 
   if (!USER_ID) {
@@ -200,7 +201,7 @@ export const App: React.FC = () => {
           <TodoList
             todos={visibleTodos}
             onDelete={handleDelete}
-            deletingTodoId={deletingTodoId}
+            deletingTodoIds={deletingTodoIds}
           />
         )}
 
