@@ -5,18 +5,16 @@ import { UserWarning } from './UserWarning';
 import { deleteTodos, getTodos, postTodos, USER_ID } from './api/todos';
 import { Todo } from './types/Todo';
 import { TodoForm } from './components/TodoForm/TodoForm';
-import classNames from 'classnames';
-
-enum FilterStatus {
-  All = 'all',
-  Active = 'active',
-  Completed = 'completed',
-}
+import { ErrorNotification } from './components/ErrorNotification';
+import { Footer } from './components/Footer/Footer';
+import { FilterStatus } from './types/FilterStatus';
+import { TodoList } from './components/TodoList/TodoList';
+import { ErrorTypes } from './types/ErrorTypes';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filter, setFilter] = useState<FilterStatus>(FilterStatus.All);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string>(ErrorTypes.noError);
   const [title, setTitle] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>();
   const [isLoading, setIsLoading] = useState(false);
@@ -25,13 +23,13 @@ export const App: React.FC = () => {
   const titleInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    setErrorMessage(null);
+    setErrorMessage(ErrorTypes.noError);
     getTodos()
       .then(todo => {
         setTodos(todo);
       })
       .catch(() => {
-        setErrorMessage('Unable to load todos');
+        setErrorMessage(ErrorTypes.emptyTodos);
       });
   }, []);
 
@@ -41,7 +39,7 @@ export const App: React.FC = () => {
     }
 
     const timerId = setTimeout(() => {
-      setErrorMessage(null);
+      setErrorMessage(ErrorTypes.noError);
     }, 3000);
 
     return () => {
@@ -94,7 +92,7 @@ export const App: React.FC = () => {
     const trimmedTitle = title.trim();
 
     if (!trimmedTitle) {
-      setErrorMessage('Title should not be empty');
+      setErrorMessage(ErrorTypes.emptyTitle);
 
       return;
     }
@@ -106,7 +104,7 @@ export const App: React.FC = () => {
       completed: false,
     };
 
-    setErrorMessage('');
+    setErrorMessage(ErrorTypes.noError);
     setIsLoading(true);
     setTempTodo(temporaryTodo);
 
@@ -120,7 +118,7 @@ export const App: React.FC = () => {
         setTitle('');
       })
       .catch(() => {
-        setErrorMessage('Unable to add a todo');
+        setErrorMessage(ErrorTypes.errorAddTodo);
       })
       .finally(() => {
         setTempTodo(null);
@@ -137,7 +135,7 @@ export const App: React.FC = () => {
         setTodos(prev => prev.filter(todo => todo.id !== todoId));
       })
       .catch(() => {
-        setErrorMessage('Unable to delete a todo');
+        setErrorMessage(ErrorTypes.errorDeleteTodo);
       })
       .finally(() => {
         setDeletingIds(prev => prev.filter(id => id !== todoId));
@@ -168,7 +166,7 @@ export const App: React.FC = () => {
     setTodos(current => current.filter(todo => !deletedIds.includes(todo.id)));
 
     if (deletedIds.length < completedIds.length) {
-      setErrorMessage('Unable to delete a todo');
+      setErrorMessage(ErrorTypes.errorDeleteTodo);
     }
 
     setDeletingIds(prev => prev.filter(id => !completedIds.includes(id)));
@@ -196,140 +194,28 @@ export const App: React.FC = () => {
           />
         </header>
 
-        <section className="todoapp__main" data-cy="TodoList">
-          {visibleTodos.map(todo => (
-            <div
-              data-cy="Todo"
-              key={todo.id}
-              className={`todo ${todo.completed === true ? 'completed' : ''}`}
-            >
-              <label className="todo__status-label">
-                <input
-                  data-cy="TodoStatus"
-                  type="checkbox"
-                  className="todo__status"
-                  checked={todo.completed}
-                />
-              </label>
-
-              {false ? (
-                <form>
-                  <input
-                    data-cy="TodoTitleField"
-                    type="text"
-                    className="todo__title-field"
-                    placeholder="Empty todo will be deleted"
-                    value="Todo is being edited now"
-                  />
-                </form>
-              ) : (
-                <span data-cy="TodoTitle" className="todo__title">
-                  {todo.title}
-                </span>
-              )}
-
-              <button
-                type="button"
-                className="todo__remove"
-                data-cy="TodoDelete"
-                onClick={() => {
-                  deleteTodo(todo.id);
-                }}
-              >
-                ×
-              </button>
-
-              <div
-                data-cy="TodoLoader"
-                className={classNames('modal overlay', {
-                  'is-active': deletingIds.includes(todo.id),
-                })}
-              >
-                <div className="modal-background has-background-white-ter" />
-                <div className="loader" />
-              </div>
-            </div>
-          ))}
-          {tempTodo && (
-            <div data-cy="Todo" className="todo">
-              <label className="todo__status-label">
-                <input
-                  data-cy="TodoStatus"
-                  type="checkbox"
-                  className="todo__status"
-                  disabled
-                />
-              </label>
-
-              <span data-cy="TodoTitle" className="todo__title">
-                {tempTodo.title}
-              </span>
-
-              <button
-                type="button"
-                className="todo__remove"
-                data-cy="TodoDelete"
-              >
-                ×
-              </button>
-
-              <div data-cy="TodoLoader" className="modal overlay is-active">
-                <div className="modal-background has-background-white-ter" />
-                <div className="loader" />
-              </div>
-            </div>
-          )}
-        </section>
+        <TodoList
+          visibleTodos={visibleTodos}
+          tempTodo={tempTodo}
+          deletingIds={deletingIds}
+          deleteTodo={deleteTodo}
+        />
 
         {todos.length > 0 && (
-          <footer className="todoapp__footer" data-cy="Footer">
-            <span className="todo-count" data-cy="TodosCounter">
-              {`${activeTodosCount} ${activeTodosCount === 1 ? 'item' : 'items'} left`}
-            </span>
-
-            <nav className="filter" data-cy="Filter">
-              {filters.map(({ value, label, href, cy }) => (
-                <a
-                  key={value}
-                  href={href}
-                  data-cy={cy}
-                  className={`filtered__link ${filter === value ? 'selected' : ''}`}
-                  onClick={() => setFilter(value)}
-                >
-                  {label}
-                </a>
-              ))}
-            </nav>
-
-            <button
-              type="button"
-              className="todoapp__clear-completed"
-              data-cy="ClearCompletedButton"
-              disabled={!hasCompleted}
-              onClick={deleteCompletedTodo}
-            >
-              Clear completed
-            </button>
-          </footer>
+          <Footer
+            activeTodosCount={activeTodosCount}
+            filters={filters}
+            filter={filter}
+            setFilter={setFilter}
+            hasCompleted={hasCompleted}
+            deleteCompletedTodo={deleteCompletedTodo}
+          />
         )}
 
-        <div
-          data-cy="ErrorNotification"
-          className={classNames(
-            'notification is-danger is-light has-text-weight-normal',
-            {
-              hidden: !errorMessage,
-            },
-          )}
-        >
-          <button
-            data-cy="HideErrorButton"
-            type="button"
-            className="delete"
-            onClick={() => setErrorMessage('')}
-          />
-          {errorMessage}
-        </div>
+        <ErrorNotification
+          errorMessage={errorMessage}
+          setErrorMessage={setErrorMessage}
+        />
       </div>
     </div>
   );
