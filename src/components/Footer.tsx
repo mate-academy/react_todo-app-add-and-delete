@@ -7,6 +7,7 @@ type Props = {
   filter: Filter;
   setFilter: (filter: Filter) => void;
   hasCompletedTodos: boolean;
+  onClear: () => void;
 };
 
 export default function Footer({
@@ -14,6 +15,8 @@ export default function Footer({
   filter,
   setFilter,
   hasCompletedTodos,
+  onClear,
+  
 }: Props) {
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -63,6 +66,7 @@ export default function Footer({
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
         disabled={!hasCompletedTodos}
+        onClick={onClear}
       >
         Clear completed
       </button>

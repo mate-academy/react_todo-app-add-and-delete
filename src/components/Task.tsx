@@ -8,9 +8,10 @@ import cn from 'classnames';
 type Props = {
   todo: Todo;
   isLoading?: boolean;
+  onDelete?: () => void;
 };
 
-export default function Task({ todo, isLoading = false}: Props) {
+export default function Task({ todo, isLoading = false, onDelete }: Props) {
   return (
     /* This is a completed todo */
     <div
@@ -35,16 +36,21 @@ export default function Task({ todo, isLoading = false}: Props) {
       </span>
 
       {/* Remove button appears only on hover */}
-      <button type="button" className="todo__remove" data-cy="TodoDelete">
+      <button
+        type="button"
+        className="todo__remove"
+        data-cy="TodoDelete"
+        onClick={onDelete}
+      >
         ×
       </button>
 
       <div
-          data-cy="TodoLoader"
-          className={cn('modal overlay', {
-            'is-active': isLoading,
-          })}
-        >
+        data-cy="TodoLoader"
+        className={cn('modal overlay', {
+          'is-active': isLoading,
+        })}
+      >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>

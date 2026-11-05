@@ -4,7 +4,7 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useRef } from 'react';
 import { UserWarning } from './UserWarning';
-import { USER_ID, getTodos, addTodo } from './api/todos';
+import { USER_ID, getTodos, addTodo, deleteTodo } from './api/todos';
 import { useState } from 'react';
 import type { Todo } from './types/Todo';
 import { Filter } from './types/Filter';
@@ -19,6 +19,7 @@ export const App: React.FC = () => {
   const [filter, setFilter] = useState<Filter>(Filter.All);
   const [title, setTitle] = useState<string>('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [deletingTodoIds, setDeletingTodoIds] = useState<number[]>([]);
 
   const unCompleted = todos.filter(todo => !todo.completed);
   const hasCompletedTodos = todos.some(todo => todo.completed);
@@ -34,6 +35,61 @@ export const App: React.FC = () => {
 
     return true;
   });
+
+  const handleDeleteTodo = (todoId: number) => {
+  setError('');
+
+  setDeletingTodoIds(currentIds => [...currentIds, todoId]);
+
+  deleteTodo(todoId)
+    .then(() => {
+      setTodos(currentTodos =>
+        currentTodos.filter(todo => todo.id !== todoId),
+      );
+    })
+    .catch(() => {
+      setError('Unable to delete a todo');
+    })
+    .finally(() => {
+      setDeletingTodoIds(currentIds =>
+        currentIds.filter(id => id !== todoId),
+      );
+    });
+  };
+  
+const onClear = () => {
+  const completedTodos = todos.filter(todo => todo.completed);
+  const completedIds = completedTodos.map(todo => todo.id);
+
+  if (completedIds.length === 0) {
+    return;
+  }
+
+  setError('');
+  setDeletingTodoIds(currentIds => [...currentIds, ...completedIds]);
+
+  Promise.allSettled(
+    completedIds.map(id => deleteTodo(id)),
+  )
+    .then(results => {
+      const successfulIds = completedIds.filter(
+        (_, index) => results[index].status === 'fulfilled',
+      );
+
+      setTodos(currentTodos =>
+        currentTodos.filter(todo => !successfulIds.includes(todo.id)),
+      );
+
+      if (results.some(result => result.status === 'rejected')) {
+        setError('Unable to delete a todo');
+      }
+    })
+    .finally(() => {
+      setDeletingTodoIds(currentIds =>
+        currentIds.filter(id => !completedIds.includes(id)),
+      );
+    });
+};
 
   // turning API into array
 
@@ -78,6 +134,7 @@ export const App: React.FC = () => {
       return;
     }
 
+    setError('');
     const addingTodo = addTodo(trimTitle);
 
     setTempTodo({
@@ -130,7 +187,15 @@ export const App: React.FC = () => {
           </form>
         </header>
 
-        {todos.length > 0 && <TodoList todos={visibleTodos} />}
+        {todos.length > 0 && (
+          <TodoList
+            todos={visibleTodos}
+            onDelete={handleDeleteTodo}
+            deletingTodoIds={deletingTodoIds}
+          />
+        )}
+
+        {tempTodo && <Task todo={tempTodo} isLoading />}
 
         {todos.length > 0 && (
           <Footer
@@ -138,14 +203,9 @@ export const App: React.FC = () => {
             filter={filter}
             setFilter={setFilter}
             hasCompletedTodos={hasCompletedTodos}
+            onClear={onClear}
           />
         )}
-
-        {tempTodo && (
-          <Task todo={tempTodo} isLoading />
-          
-        )}
-        
       </div>
       <Errors error={error} setErrors={setError} />
     </div>
