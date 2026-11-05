@@ -11,6 +11,7 @@ import { Filter } from './types/Filter';
 import TodoList from './components/TodoList';
 import Footer from './components/Footer';
 import Errors from './components/Errors';
+import Task from './components/Task';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -139,6 +140,12 @@ export const App: React.FC = () => {
             hasCompletedTodos={hasCompletedTodos}
           />
         )}
+
+        {tempTodo && (
+          <Task todo={tempTodo} isLoading />
+          
+        )}
+        
       </div>
       <Errors error={error} setErrors={setError} />
     </div>

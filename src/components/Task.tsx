@@ -7,9 +7,10 @@ import cn from 'classnames';
 
 type Props = {
   todo: Todo;
+  isLoading?: boolean;
 };
 
-export default function Task({ todo }: Props) {
+export default function Task({ todo, isLoading = false}: Props) {
   return (
     /* This is a completed todo */
     <div
@@ -38,8 +39,12 @@ export default function Task({ todo }: Props) {
         ×
       </button>
 
-      {/* overlay will cover the todo while it is being deleted or updated */}
-      <div data-cy="TodoLoader" className="modal overlay">
+      <div
+          data-cy="TodoLoader"
+          className={cn('modal overlay', {
+            'is-active': isLoading,
+          })}
+        >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>
