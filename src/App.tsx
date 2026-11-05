@@ -2,9 +2,9 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { UserWarning } from './UserWarning';
-import { USER_ID, getTodos } from './api/todos';
+import { USER_ID, getTodos, addTodo } from './api/todos';
 import { useState } from 'react';
 import type { Todo } from './types/Todo';
 import { Filter } from './types/Filter';
@@ -16,6 +16,8 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [error, setError] = useState<string>('');
   const [filter, setFilter] = useState<Filter>(Filter.All);
+  const [title, setTitle] = useState<string>('');
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   const unCompleted = todos.filter(todo => !todo.completed);
   const hasCompletedTodos = todos.some(todo => todo.completed);
@@ -32,6 +34,8 @@ export const App: React.FC = () => {
     return true;
   });
 
+  // turning API into array
+
   useEffect(() => {
     setError('');
 
@@ -41,6 +45,8 @@ export const App: React.FC = () => {
       })
       .catch(() => setError('Unable to load todos'));
   }, []);
+
+  // error handler nad timer
 
   useEffect(() => {
     if (!error) {
@@ -52,8 +58,45 @@ export const App: React.FC = () => {
     return () => clearTimeout(errorTime);
   }, [error]);
 
+  // starting focus/
+  const textFocus = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (tempTodo === null) {
+      textFocus.current?.focus();
+    }
+  }, [tempTodo]);
+
   const formHandler = (event: React.FormEvent) => {
     event.preventDefault();
+    const trimTitle = title.trim();
+
+    if (!trimTitle) {
+      setError('Title should not be empty');
+
+      return;
+    }
+
+    const addingTodo = addTodo(trimTitle);
+
+    setTempTodo({
+      id: 0,
+      userId: USER_ID,
+      title: trimTitle,
+      completed: false,
+    });
+
+    addingTodo
+      .then(newTodo => {
+        setTodos(currentTodos => [...currentTodos, newTodo]);
+        setTitle('');
+      })
+      .catch(() => {
+        setError('Unable to add a todo');
+      })
+      .finally(() => {
+        setTempTodo(null);
+      });
   };
 
   if (!USER_ID) {
@@ -74,10 +117,14 @@ export const App: React.FC = () => {
 
           <form onSubmit={formHandler}>
             <input
+              ref={textFocus}
               data-cy="NewTodoField"
+              value={title}
+              onChange={event => setTitle(event.target.value)}
               type="text"
               className="todoapp__new-todo"
               placeholder="What needs to be done?"
+              disabled={tempTodo !== null}
             />
           </form>
         </header>
@@ -97,4 +144,3 @@ export const App: React.FC = () => {
     </div>
   );
 };
-
