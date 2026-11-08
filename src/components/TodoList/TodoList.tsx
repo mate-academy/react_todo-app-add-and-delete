@@ -19,13 +19,13 @@ export const TodoList = ({
   setErrorType,
   setTodos,
 }: Props) => {
-  const [deletingTodoId, setDeletingTodoId] = useState<number | null>(null);
+  const [deletingTodoId, setDeletingTodoId] = useState<number[]>([]);
   const todos = tempTodo ? [...(visibleTodos || []), tempTodo] : visibleTodos;
 
   const handleDelete = async (todoId: number) => {
     try {
       setErrorType(null);
-      setDeletingTodoId(todoId);
+      setDeletingTodoId(current => [...current, todoId]);
 
       await deleteTodo(todoId);
 
@@ -35,7 +35,7 @@ export const TodoList = ({
     } catch {
       setErrorType('delete');
     } finally {
-      setDeletingTodoId(null);
+      setDeletingTodoId(current => current.filter(id => id !== todoId));
     }
   };
 
@@ -50,7 +50,7 @@ export const TodoList = ({
       <TodoInfo
         todo={todo}
         isProcessed={todo === tempTodo && tempTodo !== null}
-        isDeleting={deletingTodoId === todo.id}
+        isDeleting={deletingTodoId.includes(todo.id)}
         onDelete={handleDelete}
       />
     </div>
