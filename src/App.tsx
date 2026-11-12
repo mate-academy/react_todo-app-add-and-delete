@@ -1,15 +1,16 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import classNames from 'classnames';
 import { UserWarning } from './UserWarning';
 import { createTodo, deleteTodo, getTodos, USER_ID } from './api/todos';
 import { Todo } from './types/Todo';
 import { FilterStatus } from './types/FilterStatus';
 import { ErrorMessage } from './types/ErrorMessage';
-import { TodoItem } from './components/TodoItem';
+import { TodoList } from './components/TodoList';
 import { TodoFooter } from './components/TodoFooter';
 import { ErrorNotification } from './components/ErrorNotification';
+import { NewTodo } from './components/NewTodo';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -17,10 +18,9 @@ export const App: React.FC = () => {
     ErrorMessage.None,
   );
   const [filter, setFilter] = useState<FilterStatus>(FilterStatus.All);
-  const [title, setTitle] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
   const [deletingIds, setDeletingIds] = useState<number[]>([]);
+  const [focusRequest, setFocusRequest] = useState(0);
 
   useEffect(() => {
     if (!USER_ID) {
@@ -51,12 +51,6 @@ export const App: React.FC = () => {
       window.clearTimeout(timeoutId);
     };
   }, [errorMessage]);
-
-  useEffect(() => {
-    if (tempTodo === null) {
-      inputRef.current?.focus();
-    }
-  }, [tempTodo]);
 
   const { activeTodos, completedTodos } = useMemo(() => {
     const active: Todo[] = [];
@@ -95,38 +89,30 @@ export const App: React.FC = () => {
 
   const allTodosCompleted = todos.length > 0 && activeTodosCount === 0;
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
+  const handleAdd = (title: string): Promise<boolean> => {
     if (tempTodo !== null) {
-      return;
+      return Promise.resolve(false);
     }
 
     setErrorMessage(ErrorMessage.None);
 
-    const trimmedTitle = title.trim();
-
-    if (!trimmedTitle) {
-      setErrorMessage(ErrorMessage.EmptyTitle);
-      inputRef.current?.focus();
-
-      return;
-    }
-
     setTempTodo({
       id: 0,
-      title: trimmedTitle,
+      title,
       userId: USER_ID,
       completed: false,
     });
 
-    createTodo(trimmedTitle)
+    return createTodo(title)
       .then(createdTodo => {
         setTodos(currentTodos => [...currentTodos, createdTodo]);
-        setTitle('');
+
+        return true;
       })
       .catch(() => {
         setErrorMessage(ErrorMessage.Add);
+
+        return false;
       })
       .finally(() => {
         setTempTodo(null);
@@ -142,7 +128,7 @@ export const App: React.FC = () => {
 
     setDeletingIds(currentIds => [...currentIds, todoId]);
 
-    return deleteTodo(todoId)
+    deleteTodo(todoId)
       .then(() => {
         setTodos(currentTodos =>
           currentTodos.filter(todo => todo.id !== todoId),
@@ -154,7 +140,7 @@ export const App: React.FC = () => {
       .finally(() => {
         setDeletingIds(currentIds => currentIds.filter(id => id !== todoId));
 
-        inputRef.current?.focus();
+        setFocusRequest(current => current + 1);
       });
   };
 
@@ -187,34 +173,21 @@ export const App: React.FC = () => {
           )}
 
           {/* Add a todo on form submit */}
-          <form onSubmit={handleSubmit}>
-            <input
-              ref={inputRef}
-              data-cy="NewTodoField"
-              type="text"
-              className="todoapp__new-todo"
-              placeholder="What needs to be done?"
-              value={title}
-              onChange={event => setTitle(event.target.value)}
-              disabled={tempTodo !== null}
-              autoFocus
-            />
-          </form>
+          <NewTodo
+            isAdding={tempTodo !== null}
+            focusRequest={focusRequest}
+            onAdd={handleAdd}
+            onError={setErrorMessage}
+          />
         </header>
 
         {(todos.length > 0 || tempTodo !== null) && (
-          <section className="todoapp__main" data-cy="TodoList">
-            {visibleTodos.map(todo => (
-              <TodoItem
-                key={todo.id}
-                todo={todo}
-                isProcessed={deletingIds.includes(todo.id)}
-                onDelete={handleDelete}
-              />
-            ))}
-
-            {tempTodo !== null && <TodoItem todo={tempTodo} isProcessed />}
-          </section>
+          <TodoList
+            todos={visibleTodos}
+            tempTodo={tempTodo}
+            deletingIds={deletingIds}
+            onDelete={handleDelete}
+          />
         )}
 
         {/* Hide the footer if there are no todos */}
