@@ -21,6 +21,7 @@ export const App: React.FC = () => {
   const [todoActiveCount, setTodoActiveCount] = React.useState(0);
   const [errorMessage, setErrorMessage] = React.useState('');
   const [isErrorVisible, setIsErrorVisible] = React.useState(false);
+  const [tempTodo, setTempTodo] = React.useState<Todo | null>(null);
 
   const showError = (message: string) => {
     setErrorMessage(message);
@@ -86,6 +87,24 @@ export const App: React.FC = () => {
   };
 
   const submitTodo = () => {
+    const trimmedTitle = todoTitle.trim();
+
+    if (trimmedTitle === '') {
+      showError('Title should not be empty');
+
+      return;
+    }
+
+    // Create temp todo with the actual title
+    const temp: Todo = {
+      userId: USER_ID,
+      id: 0,
+      title: trimmedTitle,
+      completed: false,
+    };
+
+    setTempTodo(temp);
+
     if (todoTitle.trim() === '') {
       // Handle empty title case
       showError('Title should not be empty');
@@ -106,9 +125,11 @@ export const App: React.FC = () => {
       .then(() => {
         setTodos(prevTodos => [...prevTodos, newTodo]);
         setTodoTitle(''); // Clear the input field after successful submission
+        setTempTodo(null); // Clear the temporary todo after successful submission
       })
       .catch(() => {
         showError('Unable to add a todo');
+        setTempTodo(null); // Clear the temporary todo after successful submission
       });
   };
 
@@ -167,24 +188,22 @@ export const App: React.FC = () => {
           />
 
           {/* Add a todo on form submit */}
-          {todos.length === 0 && (
-            <form
-              onSubmit={e => {
-                e.preventDefault();
-                submitTodo();
-                countActiveTodos();
-              }}
-            >
-              <input
-                data-cy="NewTodoField"
-                type="text"
-                className="todoapp__new-todo"
-                placeholder="What needs to be done?"
-                value={todoTitle}
-                onChange={e => setTodoTitle(e.target.value)}
-              />
-            </form>
-          )}
+          <form
+            onSubmit={e => {
+              e.preventDefault();
+              submitTodo();
+              countActiveTodos();
+            }}
+          >
+            <input
+              data-cy="NewTodoField"
+              type="text"
+              className="todoapp__new-todo"
+              placeholder="What needs to be done?"
+              value={todoTitle}
+              onChange={e => setTodoTitle(e.target.value)}
+            />
+          </form>
         </header>
 
         {todos.length > 0 && (
@@ -223,6 +242,10 @@ export const App: React.FC = () => {
                 </button>
               </div>
             ))}
+
+            {tempTodo && (
+              <div key={tempTodo.id} data-cy="Todo" className="todo"></div>
+            )}
           </section>
         )}
 
