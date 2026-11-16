@@ -40,8 +40,7 @@ export const App: React.FC = () => {
   const hasCompletedTodos = todos.some(todo => todo.completed);
   const allCompleted = todos.length > 0 && todos.every(todo => todo.completed);
 
-  /// api 
-
+  /// api
 
   useEffect(() => {
     setError(null);
@@ -63,30 +62,30 @@ export const App: React.FC = () => {
     return () => clearTimeout(errorTime);
   }, [error]);
 
-  // SUBMIT 
+  // SUBMIT
 
   const formHandler = (event: React.FormEvent) => {
-  event.preventDefault();
+    event.preventDefault();
 
-  const trimmedTitle = title.trim();
+    const trimmedTitle = title.trim();
 
-  if (!trimmedTitle) {
-    setError(ErrorMessage.EmptyTitle);
-    return;
-  }
+    if (!trimmedTitle) {
+      setError(ErrorMessage.EmptyTitle);
+
+      return;
+    }
 
     setError(null);
-    
-    const addingTodo = addTodo(trimmedTitle);
-    
 
-  setTempTodo({
-    id: 0,
-    userId: USER_ID,
-    title: trimmedTitle,
-    completed: false,
-  });
-    
+    const addingTodo = addTodo(trimmedTitle);
+
+    setTempTodo({
+      id: 0,
+      userId: USER_ID,
+      title: trimmedTitle,
+      completed: false,
+    });
+
     addingTodo
       .then(newTodo => {
         setTodos(currentTodos => [...currentTodos, newTodo]);
@@ -99,33 +98,32 @@ export const App: React.FC = () => {
         setTempTodo(null);
       });
   };
-  // delete 
-  
+  // delete
+
   const deleteTodoById = (todoId: number) => {
     setError(null);
 
-      setDeletingTodoIds(currentIds => [...currentIds, todoId]);
+    setDeletingTodoIds(currentIds => [...currentIds, todoId]);
 
     deleteTodo(todoId)
-    .then(() => {
-      setTodos(currentTodos =>
-        currentTodos.filter(todo => todo.id !== todoId),
-      );
-    })
-    .catch(() => {
-      setError(ErrorMessage.Delete);
-    })
-    .finally(() => {
-      setDeletingTodoIds(currentIds =>
-        currentIds.filter(id => id !== todoId),
-      );
-    });
+      .then(() => {
+        setTodos(currentTodos =>
+          currentTodos.filter(todo => todo.id !== todoId),
+        );
+      })
+      .catch(() => {
+        setError(ErrorMessage.Delete);
+      })
+      .finally(() => {
+        setDeletingTodoIds(currentIds =>
+          currentIds.filter(id => id !== todoId),
+        );
+      });
   };
 
-  // clear completed 
+  // clear completed
 
   const handleClearCompleted = () => {
-    
     const completedTodos = todos.filter(todo => todo.completed);
     const completedIds = completedTodos.map(todo => todo.id);
 
@@ -135,14 +133,9 @@ export const App: React.FC = () => {
 
     setError(null);
 
-    setDeletingTodoIds(currentIds => [
-      ...currentIds,
-      ...completedIds,
-    ]);
+    setDeletingTodoIds(currentIds => [...currentIds, ...completedIds]);
 
-    Promise.allSettled(
-      completedIds.map(id => deleteTodo(id)),
-    )
+    Promise.allSettled(completedIds.map(id => deleteTodo(id)))
       .then(results => {
         const successfulIds = completedIds.filter(
           (_, index) => results[index].status === 'fulfilled',
@@ -161,7 +154,7 @@ export const App: React.FC = () => {
           currentIds.filter(id => !completedIds.includes(id)),
         );
       });
-};
+  };
 
   /// text focus
 
@@ -207,15 +200,15 @@ export const App: React.FC = () => {
           </form>
         </header>
 
-        {todos.length > 0 && <TodoList
-          todos={visibleTodos}
-          onDelete={deleteTodoById}
-          deletingTodoIds={deletingTodoIds}
-        />}
-
-        {tempTodo && (
-          <Task todo={tempTodo} isLoading />
+        {todos.length > 0 && (
+          <TodoList
+            todos={visibleTodos}
+            onDelete={deleteTodoById}
+            deletingTodoIds={deletingTodoIds}
+          />
         )}
+
+        {tempTodo && <Task todo={tempTodo} isLoading />}
 
         {todos.length > 0 && (
           <Footer

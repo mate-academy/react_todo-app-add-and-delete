@@ -15,7 +15,7 @@ export default function Footer({
   filter,
   onFilterChange,
   hasCompletedTodos,
-  onClearCompleted
+  onClearCompleted,
 }: Props) {
   return (
     <footer className="todoapp__footer" data-cy="Footer">

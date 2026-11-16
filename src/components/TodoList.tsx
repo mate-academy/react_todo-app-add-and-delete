@@ -8,11 +8,7 @@ type Props = {
   deletingTodoIds: number[];
 };
 
-export default function TodoList({
-  todos,
-  onDelete,
-  deletingTodoIds,
-}: Props) {
+export default function TodoList({ todos, onDelete, deletingTodoIds }: Props) {
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {todos.map(task => (
