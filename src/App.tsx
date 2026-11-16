@@ -161,10 +161,10 @@ export const App: React.FC = () => {
   const focusText = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (tempTodo === null) {
+    if (tempTodo === null && deletingTodoIds.length === 0) {
       focusText.current?.focus();
     }
-  }, [tempTodo]);
+  }, [tempTodo, deletingTodoIds]);
 
   if (!USER_ID) {
     return <UserWarning />;
