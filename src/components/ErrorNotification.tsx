@@ -7,7 +7,6 @@ type Props = {
 };
 
 export const ErrorNotification: React.FC<Props> = ({ message, onClose }) => (
-  // DON'T use conditional rendering to hide the notification
   <div
     data-cy="ErrorNotification"
     className={cn('notification is-danger is-light has-text-weight-normal', {

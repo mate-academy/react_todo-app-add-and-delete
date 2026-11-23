@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
 import React from 'react';
 import cn from 'classnames';
 import { Todo } from '../types/Todo';
@@ -18,7 +17,7 @@ export const TodoItem: React.FC<Props> = ({
 
   return (
     <div data-cy="Todo" className={cn('todo', { completed })}>
-      <label className="todo__status-label">
+      <label className="todo__status-label" aria-label="Toggle todo status">
         <input
           data-cy="TodoStatus"
           type="checkbox"
