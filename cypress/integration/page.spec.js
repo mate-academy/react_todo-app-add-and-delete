@@ -696,6 +696,29 @@ describe('', () => {
     });
   });
 
+  it('should show a temporary todo while creating the first todo', () => {
+    page.mockLoad({ body: [] }).as('loadRequest');
+    page.visit();
+    cy.wait('@loadRequest');
+
+    page.mockCreate().as('createRequest');
+    page.pauseTimers();
+    page.newTodoField().type('  First todo  {enter}');
+
+    page.newTodoField().should('be.disabled');
+    todos.assertCount(1);
+    todos.assertTitle(0, 'First todo');
+    todos.assertLoading(0);
+    filter.assertHidden();
+
+    page.flushJSTimers();
+    cy.wait('@createRequest');
+    filter.assertVisible();
+    todos.assertCount(1);
+    todos.assertNotLoading(0);
+    page.newTodoField().should('be.focused').and('have.value', '');
+  });
+
   describe('Adding a first todo', () => {
     beforeEach(() => {
       page.mockLoad({ body: [] }).as('loadRequest');
