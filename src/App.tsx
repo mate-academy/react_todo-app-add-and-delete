@@ -88,10 +88,12 @@ export const App: React.FC = () => {
       completed: false,
     };
 
-    setTempTodo(temp);
-
     try {
-      const created = await createTodo(trimmed);
+      const request = createTodo(trimmed);
+
+      setTempTodo(temp);
+
+      const created = await request;
 
       setTodos(prev => [...prev, created]);
       setNewTitle('');
@@ -104,8 +106,7 @@ export const App: React.FC = () => {
     }
   };
 
-  const handleDelete = async (todoId: number) => {
-    setErrorMessage('');
+  const removeTodo = async (todoId: number) => {
     setLoadingTodoIds(prev => [...prev, todoId]);
 
     try {
@@ -119,39 +120,23 @@ export const App: React.FC = () => {
     }
   };
 
+  const handleDelete = (todoId: number) => {
+    setErrorMessage('');
+
+    return removeTodo(todoId);
+  };
+
+  const completedTodosToDelete = todos.filter(
+    todo => todo.completed && !loadingTodoIds.includes(todo.id),
+  );
+
   const handleClearCompleted = async () => {
-    const completedTodos = todos.filter(t => t.completed);
-
-    if (!completedTodos.length) {
-      return;
-    }
-
-    const ids = completedTodos.map(t => t.id);
-
-    setLoadingTodoIds(prev => [...prev, ...ids]);
-
-    const results = await Promise.allSettled(ids.map(id => deleteTodo(id)));
-
-    const succeededIds = ids.filter(
-      (_, i) => results[i].status === 'fulfilled',
-    );
-    const hasAnyError = results.some(r => r.status === 'rejected');
-
-    if (succeededIds.length) {
-      setTodos(prev => prev.filter(t => !succeededIds.includes(t.id)));
-    }
-
-    if (hasAnyError) {
-      setErrorMessage(ErrorText.Delete);
-    }
-
-    setLoadingTodoIds(prev => prev.filter(id => !ids.includes(id)));
-    newTodoFieldRef.current?.focus();
+    setErrorMessage('');
+    await Promise.all(completedTodosToDelete.map(todo => removeTodo(todo.id)));
   };
 
   const activeTodosCount = todos.filter(t => !t.completed).length;
   const allCompleted = todos.length > 0 && activeTodosCount === 0;
-  const hasCompleted = todos.some(t => t.completed);
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -172,7 +157,7 @@ export const App: React.FC = () => {
           inputRef={newTodoFieldRef}
         />
 
-        {(!!todos.length || isLoading) && (
+        {(!!todos.length || isLoading || tempTodo) && (
           <section className="todoapp__main" data-cy="TodoList">
             {isLoading && (
               <div data-cy="TodoLoader" className="modal overlay is-active">
@@ -189,23 +174,12 @@ export const App: React.FC = () => {
                   key={todo.id}
                   todo={todo}
                   isLoading={isRowLoading}
-                  onToggle={() => {}}
-                  onDelete={() => handleDelete(todo.id)}
-                  onRename={() => {}}
+                  onDelete={handleDelete}
                 />
               );
             })}
 
-            {tempTodo && (
-              <TodoItem
-                key="temp"
-                todo={tempTodo}
-                isLoading
-                onToggle={() => {}}
-                onDelete={() => {}}
-                onRename={() => {}}
-              />
-            )}
+            {tempTodo && <TodoItem key="temp" todo={tempTodo} isLoading />}
           </section>
         )}
 
@@ -214,7 +188,7 @@ export const App: React.FC = () => {
           todosLength={todos.length}
           current={filterStatus}
           setFilter={setFilterStatus}
-          hasCompleted={hasCompleted}
+          canClearCompleted={completedTodosToDelete.length > 0}
           onClearCompleted={handleClearCompleted}
         />
       </div>

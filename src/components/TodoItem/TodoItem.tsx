@@ -7,9 +7,9 @@ import { Todo } from '../../types/Todo';
 type Props = {
   todo: Todo;
   isLoading: boolean;
-  onToggle: (todoId: number) => Promise<void> | void;
-  onDelete: (todoId: number) => Promise<void> | void;
-  onRename: (id: number, newTitle: string) => Promise<void> | void;
+  onToggle?: (todoId: number) => Promise<void> | void;
+  onDelete?: (todoId: number) => Promise<void> | void;
+  onRename?: (id: number, newTitle: string) => Promise<void> | void;
 };
 
 export const TodoItem: React.FC<Props> = ({
@@ -38,7 +38,7 @@ export const TodoItem: React.FC<Props> = ({
   }, [todo.title, isEditing]);
 
   const startEditing = () => {
-    if (isLoading) {
+    if (isLoading || !onRename) {
       return;
     }
 
@@ -60,14 +60,19 @@ export const TodoItem: React.FC<Props> = ({
     }
 
     if (!newTitle) {
-      await onDelete(todo.id);
+      await onDelete?.(todo.id);
       setIsEditing(false);
 
       return;
     }
 
-    await onRename(todo.id, newTitle);
+    await onRename?.(todo.id, newTitle);
     setIsEditing(false);
+  };
+
+  const handleEditSubmit: React.FormEventHandler<HTMLFormElement> = e => {
+    e.preventDefault();
+    void saveEditing();
   };
 
   const onKeyDown: React.KeyboardEventHandler<HTMLInputElement> = async e => {
@@ -93,18 +98,13 @@ export const TodoItem: React.FC<Props> = ({
           type="checkbox"
           className="todo__status"
           checked={todo.completed}
-          onChange={() => onToggle(todo.id)}
-          disabled={isLoading || isEditing}
+          onChange={() => onToggle?.(todo.id)}
+          disabled={isLoading || isEditing || !onToggle}
         />
       </label>
 
       {isEditing ? (
-        <form
-          onSubmit={async e => {
-            e.preventDefault();
-            await saveEditing();
-          }}
-        >
+        <form onSubmit={handleEditSubmit}>
           <input
             data-cy="TodoTitleField"
             type="text"
@@ -113,9 +113,7 @@ export const TodoItem: React.FC<Props> = ({
             ref={inputRef}
             value={title}
             onChange={e => setTitle(e.target.value)}
-            onBlur={async () => {
-              await saveEditing();
-            }}
+            onBlur={saveEditing}
             onKeyDown={onKeyDown}
             disabled={isLoading}
           />
@@ -125,8 +123,8 @@ export const TodoItem: React.FC<Props> = ({
           <span
             data-cy="TodoTitle"
             className="todo__title"
-            onDoubleClick={startEditing}
-            title="Double-click to edit"
+            onDoubleClick={onRename ? startEditing : undefined}
+            title={onRename ? 'Double-click to edit' : undefined}
           >
             {todo.title}
           </span>
@@ -135,8 +133,8 @@ export const TodoItem: React.FC<Props> = ({
             type="button"
             className="todo__remove"
             data-cy="TodoDelete"
-            onClick={() => onDelete(todo.id)}
-            disabled={isLoading}
+            onClick={() => onDelete?.(todo.id)}
+            disabled={isLoading || !onDelete}
             aria-label="Delete todo"
             title="Delete"
           >

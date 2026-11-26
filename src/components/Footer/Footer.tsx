@@ -7,7 +7,7 @@ type Props = {
   todosLength: number;
   current: FilterStatus;
   setFilter: (f: FilterStatus) => void;
-  hasCompleted: boolean;
+  canClearCompleted: boolean;
   onClearCompleted: () => void;
 };
 
@@ -42,7 +42,7 @@ export const Footer: React.FC<Props> = ({
   todosLength,
   current,
   setFilter,
-  hasCompleted,
+  canClearCompleted,
   onClearCompleted,
 }) => {
   if (!todosLength) {
@@ -83,7 +83,7 @@ export const Footer: React.FC<Props> = ({
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
-        disabled={!hasCompleted}
+        disabled={!canClearCompleted}
         onClick={onClearCompleted}
       >
         Clear completed
