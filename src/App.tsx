@@ -6,38 +6,15 @@ import {
   deleteTodo as deleteTodoRequest,
   getTodos,
   Todo,
-} from './api';
+} from './styles/api';
 import { UserWarning } from './UserWarning';
 
 type Filter = 'all' | 'active' | 'completed';
 
-function getUserId(): number {
-  try {
-    const storedUser = window.localStorage.getItem('user');
-
-    if (!storedUser) {
-      return 0;
-    }
-
-    const user: unknown = JSON.parse(storedUser);
-
-    if (
-      typeof user === 'object' &&
-      user !== null &&
-      'id' in user &&
-      typeof user.id === 'number'
-    ) {
-      return user.id;
-    }
-  } catch {
-    return 0;
-  }
-
-  return 0;
-}
+const USER_ID = 3;
 
 export const App: React.FC = () => {
-  const [userId] = useState(getUserId);
+  const [userId] = useState(USER_ID);
   const [todos, setTodos] = useState<Todo[]>([]);
   const [title, setTitle] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
@@ -228,7 +205,132 @@ export const App: React.FC = () => {
     </div>
   );
 
+  const renderTodo = (todo: Todo, isProcessed: boolean) => (
+    <div
+      key={todo.id || 'temp'}
+      className={classNames('todo', { completed: todo.completed })}
+      data-cy="Todo"
+    >
+      <div className="todo__status-label">
+        <input
+          aria-label={`Completion status for ${todo.title}`}
+          className="todo__status"
+          type="checkbox"
+          checked={todo.completed}
+          readOnly
+          data-cy="TodoStatus"
+        />
+      </div>
+
+      <span className="todo__title" data-cy="TodoTitle">
+        {todo.title}
+      </span>
+
+      {!isProcessed && (
+        <button
+          type="button"
+          className="todo__remove"
+          data-cy="TodoDelete"
+          onClick={() => removeTodo(todo)}
+        >
+          ×
+        </button>
+      )}
+
+      <div
+        className={classNames('modal overlay', {
+          'is-active': isProcessed,
+        })}
+        data-cy="TodoLoader"
+      >
+        <div className="modal-background has-background-white-ter" />
+        <div className="loader" />
+      </div>
+    </div>
+  );
+
   return (
+    <section className="todoapp">
+      <header className="todoapp__header">
+        <h1 className="todoapp__title">todos</h1>
+        <form onSubmit={submitTodo}>
+          <input
+            ref={inputRef}
+            className="todoapp__new-todo"
+            data-cy="NewTodoField"
+            placeholder="What needs to be done?"
+            value={title}
+            onChange={event => setTitle(event.target.value)}
+            disabled={isAdding}
+            autoFocus
+          />
+        </form>
+      </header>
+
+      {(todos.length > 0 || tempTodo) && (
+        <section className="todoapp__content">
+          <div className="todoapp__main" data-cy="TodoList">
+            {visibleTodos.map(todo =>
+              renderTodo(todo, processingIds.has(todo.id)),
+            )}
+            {tempTodo && renderTodo(tempTodo, true)}
+          </div>
+
+          {todos.length > 0 && (
+            <footer className="todoapp__footer">
+              <span className="todo-count" data-cy="TodosCounter">
+                <strong>{activeCount}</strong>{' '}
+                {activeCount === 1 ? 'item' : 'items'} left
+              </span>
+
+              <nav className="filter" data-cy="Filter">
+                {(['all', 'active', 'completed'] as const).map(filterName => (
+                  <a
+                    key={filterName}
+                    href={`#/${filterName}`}
+                    className={classNames('filter__link', {
+                      selected: filter === filterName,
+                    })}
+                    data-cy={`FilterLink${filterName[0].toUpperCase()}${filterName.slice(1)}`}
+                    onClick={event => {
+                      event.preventDefault();
+                      setFilter(filterName);
+                    }}
+                  >
+                    {filterName[0].toUpperCase() + filterName.slice(1)}
+                  </a>
+                ))}
+              </nav>
+
+              <button
+                type="button"
+                className="todoapp__clear-completed"
+                data-cy="ClearCompletedButton"
+                disabled={!hasCompletedTodos}
+                onClick={clearCompleted}
+              >
+                Clear completed
+              </button>
+            </footer>
+          )}
+        </section>
+      )}
+
+      <div
+        className={classNames('notification is-danger is-light', {
+          hidden: !errorMessage,
+        })}
+        data-cy="ErrorNotification"
+      >
+        {errorMessage}
+        <button
+          type="button"
+          className="delete"
+          aria-label="Hide error"
+          data-cy="HideErrorButton"
+          onClick={() => setErrorMessage('')}
+        />
+      </div>
     <section className="todoapp">
       <header className="todoapp__header">
         <h1 className="todoapp__title">todos</h1>
